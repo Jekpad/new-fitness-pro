@@ -1,0 +1,62 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --foreground-rgb: 0, 0, 0;
+  --background-start-rgb: 214, 219, 220;
+  --background-end-rgb: 255, 255, 255;
+
+  /* Рабочие стили приложения */
+  --color-acсent: #bcec30;
+  --color-acent-hover: #c6ff00;
+  --color-accent-secondary: #00c1ff;
+  --color-error: #db0030;
+
+  --color-active: #000000;
+  --color-inactive: #f7f7f7;
+
+  --color-background: #fafafa;
+  --color-component-background: #ffffff;
+  --color-yellow: #ffc700;
+  --color-blue: #2491d2;
+  --color-orange: #f7a012;
+  --color-peach: #ff7e65;
+  --color-purple: #7d458c;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --foreground-rgb: 255, 255, 255;
+    --background-start-rgb: 0, 0, 0;
+    --background-end-rgb: 0, 0, 0;
+  }
+}
+
+body {
+  color: #000000;
+  background: linear-gradient(to bottom, transparent, rgb(var(--color-background)))
+    rgb(var(--color-component-background));
+}
+
+@layer base {
+  .custom-scroll::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  .custom-scroll::-webkit-scrollbar-track {
+    background-color: var(--color-inactive);
+    border-radius: 10px;
+  }
+
+  .custom-scroll::-webkit-scrollbar-thumb {
+    background-color: var(--color-active);
+    border-radius: 10px;
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}
