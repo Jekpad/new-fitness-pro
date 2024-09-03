@@ -1,8 +1,11 @@
 import Card from "@/components/Card";
 import ContentWrapper from "@/components/ContentWrapper";
 import Header from "@/components/Header/Header";
+const env = import.meta.env;
 
 function Main() {
+  console.log(env);
+
   return (
     <ContentWrapper>
       <Header />

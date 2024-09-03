@@ -1,0 +1,100 @@
+import React, { useState, useEffect } from "react";
+import { getCourseById } from "./firebaseService"; // Импорт функции
+import React, { useState, useEffect } from "react";
+import { getCourses } from "./firebaseService"; // Импорт функции
+
+const CoursesList = () => {
+  const [courses, setCourses] = useState([]);
+
+  useEffect(() => {
+    const fetchCourses = async () => {
+      const fetchedCourses = await getCourses();
+      setCourses(fetchedCourses);
+    };
+
+    fetchCourses();
+  }, []);
+
+  return (
+    <div>
+      <h2>Доступные курсы</h2>
+      <ul>
+        {courses.map((course) => (
+          <li key={course.id}>
+            <h3>{course.nameRU}</h3>
+            <p>{course.description}</p>
+            <ul>
+              {course.directions.map((direction, index) => (
+                <li key={index}>{direction}</li>
+              ))}
+            </ul>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+};
+
+export default CoursesList;
+
+
+const CourseDetails = ({ courseId }) => {
+  const [course, setCourse] = useState(null);
+
+  useEffect(() => {
+    const fetchCourse = async () => {
+      const fetchedCourse = await getCourseById(courseId);
+      setCourse(fetchedCourse);
+    };
+
+    fetchCourse();
+  }, [courseId]);
+
+  if (!course) {
+    return <div>Курс не найден или загрузка...</div>;
+  }
+
+  return (
+    <div>
+      <h2>{course.nameRU}</h2>
+      <p>{course.description}</p>
+      <ul>
+        {course.directions.map((direction, index) => (
+          <li key={index}>{direction}</li>
+        ))}
+      </ul>
+    </div>
+  );
+};
+
+export default CourseDetails;
+
+подписка/отписка
+import React, { useState } from "react";
+import { subscribeToCourse, unsubscribeFromCourse } from "./firebaseService"; // Импорт функций
+
+const CourseSubscription = ({ userId, courseId }) => {
+  const [subscribed, setSubscribed] = useState(false);
+
+  const handleSubscribe = async () => {
+    await subscribeToCourse(userId, courseId);
+    setSubscribed(true);
+  };
+
+  const handleUnsubscribe = async () => {
+    await unsubscribeFromCourse(userId, courseId);
+    setSubscribed(false);
+  };
+
+  return (
+    <div>
+      {subscribed ? (
+        <button onClick={handleUnsubscribe}>Отписаться от курса</button>
+      ) : (
+        <button onClick={handleSubscribe}>Подписаться на курс</button>
+      )}
+    </div>
+  );
+};
+
+export default CourseSubscription;

@@ -1,5 +1,3 @@
-import React from "react";
-
 interface Course {
   name: string;
   length: number;
@@ -13,7 +11,7 @@ interface CourseItemProps {
   status: string;
 }
 
-const CourseItem: React.FC<CourseItemProps> = ({ course, status }) => {
+const CourseItem = ({ course, status }: CourseItemProps) => {
   return (
     <>
       <div className="mb-2 p-4 bg-white  rounded-3xl shadow-xl">
