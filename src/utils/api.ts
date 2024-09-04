@@ -60,10 +60,10 @@ export const getCourseById = async (courseId: string) => {
 };
 
 //подписка на курс
-export const subscribeToCourse = async (userId: string, courseId: string) => {
+export const subscribeToCourse = async (uid: string, courseId: string) => {
   try {
     // Ссылка на подписки пользователя в базе данных
-    const userCoursesRef = firebase.database().ref(`users/${userId}/сourses`);
+    const userCoursesRef = firebase.database().ref(`users/${uid}/сourses`);
 
     // Получение текущих подписок пользователя
     const snapshot = await userCoursesRef.once("value");
@@ -73,7 +73,7 @@ export const subscribeToCourse = async (userId: string, courseId: string) => {
     if (!subscribedCourses.includes(courseId)) {
       subscribedCourses.push(courseId);
       await userCoursesRef.set(subscribedCourses);
-      console.log(`Пользователь ${userId} успешно подписался на курс ${courseId}.`);
+      console.log(`Пользователь ${uid} успешно подписался на курс ${courseId}.`);
     } else {
       console.log(`Пользователь уже подписан на курс ${courseId}.`);
     }
@@ -83,12 +83,9 @@ export const subscribeToCourse = async (userId: string, courseId: string) => {
 };
 
 //отписка от курса
-export const unsubscribeFromCourse = async (userId: string, courseId: string) => {
+export const unsubscribeFromCourse = async (uid: string, courseId: string) => {
   try {
-    // Ссылка на подписки пользователя в базе данных
-    const userCoursesRef = firebase.database().ref(`users/${userId}/сourses`);
-
-    // Получение текущих подписок пользователя
+    const userCoursesRef = firebase.database().ref(`users/${uid}/сourses`);
     const snapshot = await userCoursesRef.once("value");
     const subscribedCourses = snapshot.val() || [];
 
@@ -96,7 +93,7 @@ export const unsubscribeFromCourse = async (userId: string, courseId: string) =>
     if (subscribedCourses.includes(courseId)) {
       const updatedCourses = subscribedCourses.filter((id: string) => id !== courseId);
       await userCoursesRef.set(updatedCourses);
-      console.log(`Пользователь ${userId} успешно отписался от курса ${courseId}.`);
+      console.log(`Пользователь ${uid} успешно отписался от курса ${courseId}.`);
     } else {
       console.log(`Пользователь не подписан на курс ${courseId}.`);
     }
