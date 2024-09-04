@@ -1,13 +1,21 @@
 import firebase from "firebase/compat/app";
 import { child, Database, get, ref, set } from "firebase/database";
 
-export const createUser = async (database: Database, email: string, uid: string) => {
+const db = firebase.database();
+
+//Регистация пользователя
+export const createUser = async (
+  database: Database,
+  email: string,
+  uid: string
+) => {
   await set(ref(database, "users/" + uid), {
     email: email,
-    workouts: {},
+    courses: {},
   });
 };
 
+//Вход
 export const getUser = async (database: Database, uid: string) => {
   const dbRef = ref(database);
   const snapshot = await get(child(dbRef, `users/${uid}`));
@@ -22,7 +30,7 @@ export const getUser = async (database: Database, uid: string) => {
 //функция получения информации по всем курсам
 export const getCourses = async () => {
   try {
-    const coursesRef = firebase.database().ref("courses");
+    const coursesRef = db.ref("courses");
     const snapshot = await coursesRef.once("value");
 
     const courses = snapshot.val();
@@ -41,7 +49,7 @@ export const getCourses = async () => {
 //функция получения данных конкретного курса
 export const getCourseById = async (courseId: string) => {
   try {
-    const courseRef = firebase.database().ref(`courses/${courseId}`);
+    const courseRef = db.ref(`courses/${courseId}`);
     const snapshot = await courseRef.once("value");
     const course = snapshot.val();
 
@@ -63,7 +71,7 @@ export const getCourseById = async (courseId: string) => {
 export const subscribeToCourse = async (uid: string, courseId: string) => {
   try {
     // Ссылка на подписки пользователя в базе данных
-    const userCoursesRef = firebase.database().ref(`users/${uid}/сourses`);
+    const userCoursesRef = db.ref(`users/${uid}/сourses`);
 
     // Получение текущих подписок пользователя
     const snapshot = await userCoursesRef.once("value");
@@ -73,7 +81,9 @@ export const subscribeToCourse = async (uid: string, courseId: string) => {
     if (!subscribedCourses.includes(courseId)) {
       subscribedCourses.push(courseId);
       await userCoursesRef.set(subscribedCourses);
-      console.log(`Пользователь ${uid} успешно подписался на курс ${courseId}.`);
+      console.log(
+        `Пользователь ${uid} успешно подписался на курс ${courseId}.`
+      );
     } else {
       console.log(`Пользователь уже подписан на курс ${courseId}.`);
     }
@@ -85,19 +95,47 @@ export const subscribeToCourse = async (uid: string, courseId: string) => {
 //отписка от курса
 export const unsubscribeFromCourse = async (uid: string, courseId: string) => {
   try {
-    const userCoursesRef = firebase.database().ref(`users/${uid}/сourses`);
+    const userCoursesRef = db.ref(`users/${uid}/сourses`);
+
     const snapshot = await userCoursesRef.once("value");
     const subscribedCourses = snapshot.val() || [];
 
     // Удаление курса из списка подписок, если он там есть
     if (subscribedCourses.includes(courseId)) {
-      const updatedCourses = subscribedCourses.filter((id: string) => id !== courseId);
+      const updatedCourses = subscribedCourses.filter(
+        (id: string) => id !== courseId
+      );
       await userCoursesRef.set(updatedCourses);
-      console.log(`Пользователь ${uid} успешно отписался от курса ${courseId}.`);
+      console.log(
+        `Пользователь ${uid} успешно отписался от курса ${courseId}.`
+      );
     } else {
       console.log(`Пользователь не подписан на курс ${courseId}.`);
     }
   } catch (error) {
     console.error("Ошибка при отписке от курса: ", error);
+  }
+};
+
+//функция получения всех курсов (подписок) пользователя
+export const getUserSubscriptions = async (uid: string): Promise<string[]> => {
+  try {
+    // Ссылка на узел с подписками пользователя
+    const userSubscriptionsRef = db.ref(`users/${uid}/courses`);
+
+    // Получаем данные подписок
+    const snapshot = await userSubscriptionsRef.once("value");
+    const subscribedCourses = snapshot.val();
+
+    // Если подписок нет, возвращаем пустой массив
+    if (!subscribedCourses) {
+      return [];
+    }
+
+    // Возвращаем подписки (массив ID курсов)
+    return subscribedCourses;
+  } catch (error) {
+    console.error("Ошибка при получении подписок пользователя: ", error);
+    return [];
   }
 };
