@@ -8,11 +8,12 @@ interface CourseInt {
   nameRU: string;
   fitting: string[];
   directions: string[];
+  image: string;
 }
 
 function Course() { // Сюда будет приходить ID курса с главной страницы после выбора пользователем
   const [courseData, setCourseData] = useState<CourseInt | null>(null);
-  const courseId = "ab1c3f";
+  const courseId = "kfpq8e";
 
   useEffect(() => {
     const fetchCourseData = async () => {
@@ -38,7 +39,8 @@ function Course() { // Сюда будет приходить ID курса с �
             </div>
             <img
               className="rounded-lg"
-              src="/yoga.png"
+              // src="/yoga.png"
+              src={courseData.image}
               alt="course_picture"
               width="1023"
               height="310"

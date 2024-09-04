@@ -3,10 +3,10 @@ import { subscribeToCourse } from "@/utils/api";
 interface CardProps {
   id: string;
   nameRU: string;
-  imageUrl: string;
+  image: string;
 }
 
-export default function Card({ id, nameRU, imageUrl }: CardProps) {
+export default function Card({ id, nameRU, image }: CardProps) {
 
   const handleSubscribe = async () => {
     const userId = "tKtot8YAzFPLVgVYAoq16qfXNWs1"; // Получать ID пользователя (пока хард)
@@ -33,7 +33,7 @@ export default function Card({ id, nameRU, imageUrl }: CardProps) {
           alt="изображение курса"
           className="h-[325px] w-[360px] rounded-[30px]"
           // src="/yogaImg.jpg"
-          src = {imageUrl}
+          src = {image}
         />
       </div>
       <div className="flex flex-col gap-[20px] px-[30px] pb-[15px] pt-[24px]">

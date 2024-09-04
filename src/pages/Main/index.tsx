@@ -9,7 +9,7 @@ const env = import.meta.env;
 interface Course {
   _id: string;
   nameRU: string;
-  imageUrl: string;
+  image: string;
 }
 
 function Main() {
@@ -40,7 +40,7 @@ function Main() {
         </div>
         <div className="mt-[50px] flex flex-wrap justify-start gap-[40px]">
          {courses.map((course) => (
-            <Card key={course._id} id={course._id} nameRU={course.nameRU} imageUrl={course.imageUrl} />
+            <Card key={course._id} id={course._id} nameRU={course.nameRU} image={course.image} />
           ))}
         </div>
         <div className="rounded-[46px] bg-[#BCEC30] px-[26px] py-[16px]">Наверх ↑</div>
