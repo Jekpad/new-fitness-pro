@@ -1,4 +1,9 @@
-export default function Card() {
+interface CardProps {
+  nameRU: string;
+  imageUrl: string;
+}
+
+export default function Card({ nameRU, imageUrl }: CardProps) {
   return (
     <div className="flex w-[360px] flex-col items-center justify-center gap-[24px] rounded-[30px] shadow-lg">
       <div className="flex w-[360px] flex-row-reverse">
@@ -13,11 +18,12 @@ export default function Card() {
         <img
           alt="изображение курса"
           className="h-[325px] w-[360px] rounded-[30px]"
-          src="/yogaImg.jpg"
+          // src="/yogaImg.jpg"
+          src = {imageUrl}
         />
       </div>
       <div className="flex flex-col gap-[20px] px-[30px] pb-[15px] pt-[24px]">
-        <h2 className="text-[32px] font-medium leading-[35px]">Йога</h2>
+        <h2 className="text-[32px] font-medium leading-[35px]">{nameRU}</h2>
         <div className="flex flex-wrap gap-[6px]">
           <div className="flex items-center justify-center gap-[6px] rounded-[50px] bg-[#F7F7F7] p-[10px]">
             <svg

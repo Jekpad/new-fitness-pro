@@ -10,9 +10,9 @@ interface CourseInt {
   directions: string[];
 }
 
-function Course() {
+function Course() { // Сюда будет приходить ID курса с главной страницы после выбора пользователем
   const [courseData, setCourseData] = useState<CourseInt | null>(null);
-  const courseId = "kfpq8e"; // Здесь указываем ID курса, например, для "Йога"
+  const courseId = "ab1c3f";
 
   useEffect(() => {
     const fetchCourseData = async () => {
@@ -24,7 +24,7 @@ function Course() {
   }, [courseId]);
 
   if (!courseData) {
-    return <p>Загрузка...</p>; // Показываем, пока данные загружаются
+    return <p>Загрузка...</p>;
   }
 
   return (
