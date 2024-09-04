@@ -1,9 +1,23 @@
+import { subscribeToCourse } from "@/utils/api";
+
 interface CardProps {
+  id: string;
   nameRU: string;
   imageUrl: string;
 }
 
-export default function Card({ nameRU, imageUrl }: CardProps) {
+export default function Card({ id, nameRU, imageUrl }: CardProps) {
+
+  const handleSubscribe = async () => {
+    const userId = "tKtot8YAzFPLVgVYAoq16qfXNWs1"; // Получать ID пользователя (пока хард)
+    try {
+      await subscribeToCourse(userId, id);
+      alert(`Вы успешно подписались на курс ${nameRU}`);
+    } catch (error) {
+      console.error("Ошибка при подписке на курс:", error);
+      alert("Произошла ошибка при подписке на курс");
+    }
+  }
   return (
     <div className="flex w-[360px] flex-col items-center justify-center gap-[24px] rounded-[30px] shadow-lg">
       <div className="flex w-[360px] flex-row-reverse">
@@ -110,9 +124,16 @@ export default function Card({ nameRU, imageUrl }: CardProps) {
               </defs>
             </svg>
             <div className="text-base font-normal leading-[18px]">Сложность</div>
+
           </div>
         </div>
       </div>
+      <button
+          onClick={handleSubscribe}
+          className="mt-4 rounded bg-green-500 px-4 py-2 text-white"
+        >
+          Добавить курс
+        </button>
     </div>
   );
 }

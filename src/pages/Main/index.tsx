@@ -7,7 +7,7 @@ const env = import.meta.env;
 
 
 interface Course {
-  id: string;
+  _id: string;
   nameRU: string;
   imageUrl: string;
 }
@@ -17,8 +17,8 @@ function Main() {
 
   useEffect(() => {
     const fetchCourses = async () => {
-      const coursesData = await getCourses(); // Получение курсов из API
-      setCourses(coursesData); // Устанавливаем курсы в состояние
+      const coursesData = await getCourses();
+      setCourses(coursesData);
     };
 
     fetchCourses();
@@ -40,7 +40,7 @@ function Main() {
         </div>
         <div className="mt-[50px] flex flex-wrap justify-start gap-[40px]">
          {courses.map((course) => (
-            <Card key={course.id} nameRU={course.nameRU} imageUrl={course.imageUrl} />
+            <Card key={course._id} id={course._id} nameRU={course.nameRU} imageUrl={course.imageUrl} />
           ))}
         </div>
         <div className="rounded-[46px] bg-[#BCEC30] px-[26px] py-[16px]">Наверх ↑</div>
