@@ -123,3 +123,20 @@ export const getUserSubscriptions = async (uid: string): Promise<string[]> => {
     return [];
   }
 };
+
+//получение данных тренировки по id
+export const getWorkoutById = async (workoutId: string) => {
+  try {
+    const workoutRef = ref(database, `workouts/${workoutId}`);
+    const snapshot = await get(workoutRef);
+
+    if (!snapshot.exists()) {
+      throw new Error("Workout not found");
+    }
+
+    return snapshot.val(); // Возвращаем данные тренировки
+  } catch (error) {
+    console.error("Ошибка при получении тренировки: ", error);
+    return null;
+  }
+};

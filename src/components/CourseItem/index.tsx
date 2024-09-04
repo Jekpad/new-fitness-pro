@@ -1,22 +1,24 @@
 interface Course {
-  name: string;
+  nameRU: string;
   length: number;
   time: string;
   difficulty: string;
   progress: number;
+  image: string;
 }
 
 interface CourseItemProps {
   course: Course;
   status: string;
+  image: string;
 }
 
-const CourseItem = ({ course, status }: CourseItemProps) => {
+const CourseItem = ({ course, status, image }: CourseItemProps) => {
   return (
     <>
       <div className="mb-2 p-4 bg-white  rounded-3xl shadow-xl">
-        <img alt="Картинка" src="/path/to/image" width="330px" height="330px" />
-        <div className="text-[24px]">{course.name}</div>
+        <img alt="Картинка" src = {image} width="330px" height="330px" />
+        <div className="text-[24px]">{course.nameRU}</div>
         <div className="flex">
           <p className="bg-[#f7f7f7] p-1 rounded-2xl w-[90px] text-center mr-[6px] flex items-center h-[38px] justify-around">
             <img src="/time.svg" alt="Time Icon" />
