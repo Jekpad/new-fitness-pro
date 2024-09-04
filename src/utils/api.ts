@@ -1,7 +1,5 @@
-import firebase from "firebase/compat/app";
 import { child, Database, get, ref, set } from "firebase/database";
-
-const db = firebase.database();
+import { database } from "../../firebase";
 
 //Регистация пользователя
 export const createUser = async (
@@ -27,11 +25,11 @@ export const getUser = async (database: Database, uid: string) => {
   return snapshot.val();
 };
 
-//функция получения информации по всем курсам
+// Функция получения всех курсов
 export const getCourses = async () => {
   try {
-    const coursesRef = db.ref("courses");
-    const snapshot = await coursesRef.once("value");
+    const coursesRef = ref(database, "courses");
+    const snapshot = await get(coursesRef);
 
     const courses = snapshot.val();
     const formattedCourses = Object.keys(courses).map((key) => ({
@@ -46,44 +44,37 @@ export const getCourses = async () => {
   }
 };
 
-//функция получения данных конкретного курса
+// Функция получения данных конкретного курса
 export const getCourseById = async (courseId: string) => {
   try {
-    const courseRef = db.ref(`courses/${courseId}`);
-    const snapshot = await courseRef.once("value");
-    const course = snapshot.val();
+    const courseRef = ref(database, `courses/${courseId}`);
+    const snapshot = await get(courseRef);
 
-    if (course) {
-      return {
-        id: courseId,
-        ...course,
-      };
-    } else {
+    if (!snapshot.exists()) {
       throw new Error("Курс не найден");
     }
+
+    return snapshot.val();
   } catch (error) {
     console.error("Ошибка при получении курса: ", error);
     return null;
   }
 };
 
-//подписка на курс
+// Подписка на курс
 export const subscribeToCourse = async (uid: string, courseId: string) => {
   try {
-    // Ссылка на подписки пользователя в базе данных
-    const userCoursesRef = db.ref(`users/${uid}/сourses`);
+    const userCoursesRef = ref(database, `users/${uid}/courses`);
 
     // Получение текущих подписок пользователя
-    const snapshot = await userCoursesRef.once("value");
+    const snapshot = await get(userCoursesRef);
     const subscribedCourses = snapshot.val() || [];
 
     // Добавление нового курса, если его нет в списке подписок
     if (!subscribedCourses.includes(courseId)) {
       subscribedCourses.push(courseId);
-      await userCoursesRef.set(subscribedCourses);
-      console.log(
-        `Пользователь ${uid} успешно подписался на курс ${courseId}.`
-      );
+      await set(userCoursesRef, subscribedCourses);
+      console.log(`Пользователь ${uid} успешно подписался на курс ${courseId}.`);
     } else {
       console.log(`Пользователь уже подписан на курс ${courseId}.`);
     }
@@ -92,12 +83,12 @@ export const subscribeToCourse = async (uid: string, courseId: string) => {
   }
 };
 
-//отписка от курса
+// Отписка от курса
 export const unsubscribeFromCourse = async (uid: string, courseId: string) => {
   try {
-    const userCoursesRef = db.ref(`users/${uid}/сourses`);
+    const userCoursesRef = ref(database, `users/${uid}/courses`);
 
-    const snapshot = await userCoursesRef.once("value");
+    const snapshot = await get(userCoursesRef);
     const subscribedCourses = snapshot.val() || [];
 
     // Удаление курса из списка подписок, если он там есть
@@ -105,10 +96,8 @@ export const unsubscribeFromCourse = async (uid: string, courseId: string) => {
       const updatedCourses = subscribedCourses.filter(
         (id: string) => id !== courseId
       );
-      await userCoursesRef.set(updatedCourses);
-      console.log(
-        `Пользователь ${uid} успешно отписался от курса ${courseId}.`
-      );
+      await set(userCoursesRef, updatedCourses);
+      console.log(`Пользователь ${uid} успешно отписался от курса ${courseId}.`);
     } else {
       console.log(`Пользователь не подписан на курс ${courseId}.`);
     }
@@ -117,22 +106,17 @@ export const unsubscribeFromCourse = async (uid: string, courseId: string) => {
   }
 };
 
-//функция получения всех курсов (подписок) пользователя
+// Функция получения всех подписок пользователя
 export const getUserSubscriptions = async (uid: string): Promise<string[]> => {
   try {
-    // Ссылка на узел с подписками пользователя
-    const userSubscriptionsRef = db.ref(`users/${uid}/courses`);
-
-    // Получаем данные подписок
-    const snapshot = await userSubscriptionsRef.once("value");
+    const userSubscriptionsRef = ref(database, `users/${uid}/courses`);
+    const snapshot = await get(userSubscriptionsRef);
     const subscribedCourses = snapshot.val();
 
-    // Если подписок нет, возвращаем пустой массив
     if (!subscribedCourses) {
       return [];
     }
 
-    // Возвращаем подписки (массив ID курсов)
     return subscribedCourses;
   } catch (error) {
     console.error("Ошибка при получении подписок пользователя: ", error);
