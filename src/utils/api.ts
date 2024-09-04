@@ -39,7 +39,7 @@ export const getCourses = async () => {
 };
 
 //функция получения данных конкретного курса
-export const getCourseById = async (courseId) => {
+export const getCourseById = async (courseId: string) => {
   try {
     const courseRef = firebase.database().ref(`courses/${courseId}`);
     const snapshot = await courseRef.once("value");
@@ -60,7 +60,7 @@ export const getCourseById = async (courseId) => {
 };
 
 //подписка на курс
-export const subscribeToCourse = async (userId, courseId) => {
+export const subscribeToCourse = async (userId: string, courseId: string) => {
   try {
     // Ссылка на подписки пользователя в базе данных
     const userCoursesRef = firebase.database().ref(`users/${userId}/сourses`);
@@ -83,7 +83,7 @@ export const subscribeToCourse = async (userId, courseId) => {
 };
 
 //отписка от курса
-export const unsubscribeFromCourse = async (userId, courseId) => {
+export const unsubscribeFromCourse = async (userId: string, courseId: string) => {
   try {
     // Ссылка на подписки пользователя в базе данных
     const userCoursesRef = firebase.database().ref(`users/${userId}/сourses`);
@@ -94,7 +94,7 @@ export const unsubscribeFromCourse = async (userId, courseId) => {
 
     // Удаление курса из списка подписок, если он там есть
     if (subscribedCourses.includes(courseId)) {
-      const updatedCourses = subscribedCourses.filter((id) => id !== courseId);
+      const updatedCourses = subscribedCourses.filter((id: string) => id !== courseId);
       await userCoursesRef.set(updatedCourses);
       console.log(`Пользователь ${userId} успешно отписался от курса ${courseId}.`);
     } else {
