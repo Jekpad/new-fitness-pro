@@ -3,7 +3,12 @@ import CourseItem from "@/components/CourseItem";
 import Header from "@/components/Header/Header";
 import ModalSelect from "@/components/Modal/ModalSelect";
 import ContentWrapper from "@/components/ContentWrapper";
-import { getCourseById, getUserSubscriptions, getWorkoutById } from "@/utils/api";
+import {
+  getCourseById,
+  getUserSubscriptions,
+  getWorkoutById,
+  unsubscribeFromCourse,
+} from "@/utils/api";
 
 interface Course {
   _id: string;
@@ -14,12 +19,13 @@ interface Course {
   progress: number;
   workouts: string[];
   image: string;
+  courseId: string;
+  userId: string;
 }
 
 interface Workout {
   name: string;
-  }
-
+}
 
 function Profile() {
   /* const courses = [
@@ -47,7 +53,6 @@ function Profile() {
   ]; */
 
   const [courses, setCourses] = useState<Course[]>([]);
-  // const [isLoading, setIsLoading] = useState<boolean>(true);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [selectedWorkouts, setSelectedWorkouts] = useState<Workout[]>([]);
 
@@ -67,18 +72,15 @@ function Profile() {
         })
       );
 
-      setCourses(coursesData); // Устанавливаем полученные курсы
-      // setIsLoading(false);
+      setCourses(coursesData);
     } catch (error) {
       console.error("Ошибка при получении курсов:", error);
-      // setIsLoading(false);
     }
   };
 
   useEffect(() => {
-    fetchUserCourses(); // Загружаем курсы пользователя при загрузке компонента
+    fetchUserCourses();
   }, []);
-
 
   const status = (progress: number) => {
     if (progress > 0 && progress < 100) {
@@ -90,7 +92,6 @@ function Profile() {
     }
   };
 
-  // Функция для получения тренировок по их ID и открытия модального окна
   const handleOpenModal = async (workoutsIds: string[]) => {
     try {
       const workoutsData = await Promise.all(
@@ -103,6 +104,17 @@ function Profile() {
       setIsModalOpen(true);
     } catch (error) {
       console.error("Ошибка при получении тренировок:", error);
+    }
+  };
+
+  const handleCourseUnsubscribe = async (courseId: string) => {
+    try {
+      await unsubscribeFromCourse(userId, courseId);
+      setCourses((prevCourses) =>
+        prevCourses.filter((course) => course._id !== courseId)
+      );
+    } catch (error) {
+      console.error("Ошибка при отписке от курса:", error);
     }
   };
 
@@ -141,17 +153,26 @@ function Profile() {
             {courses.map((course) => (
               <div
                 key={course._id}
-                // onClick={handleOpenModal}
                 onClick={() => handleOpenModal(course.workouts)}
                 className="w-full p-2 sm:w-1/2 md:w-1/3 lg:w-1/3"
               >
-                <CourseItem course={course} status={status(course.progress)} image={course.image}/>
+                <CourseItem
+                  course={course}
+                  status={status(course.progress)}
+                  image={course.image}
+                  courseId={course._id}
+                  onCourseUnsubscribe={handleCourseUnsubscribe}
+                />
               </div>
             ))}
           </div>
         </div>
       </div>
-      <ModalSelect isOpen={isModalOpen} onClose={handleCloseModal} workouts={selectedWorkouts}/>
+      <ModalSelect
+        isOpen={isModalOpen}
+        onClose={handleCloseModal}
+        workouts={selectedWorkouts}
+      />
     </ContentWrapper>
   );
 }

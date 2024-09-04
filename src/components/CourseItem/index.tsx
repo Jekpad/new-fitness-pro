@@ -11,9 +11,22 @@ interface CourseItemProps {
   course: Course;
   status: string;
   image: string;
+  courseId: string;
+  onCourseUnsubscribe: (courseId: string) => void;
 }
 
-const CourseItem = ({ course, status, image }: CourseItemProps) => {
+const CourseItem = ({ course, status, image, courseId, onCourseUnsubscribe}: CourseItemProps) => {
+
+  const handleUnsubscribe = async (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    try {
+      await onCourseUnsubscribe(courseId);
+    } catch (error) {
+      console.error("Ошибка при отписке от курса:", error);
+    }
+  };
+
   return (
     <>
       <div className="mb-2 p-4 bg-white  rounded-3xl shadow-xl">
@@ -44,6 +57,13 @@ const CourseItem = ({ course, status, image }: CourseItemProps) => {
           className="text-[15px] text-black border bg-[#bcec30] border-none focus:outline-none hover:bg-[#bcec30]-100 focus:ring-4 focus:ring-gray-100 font-thin rounded-full px-5 py-2.5 me-2 w-[100%]"
         >
           {status}
+        </button>
+        <button
+          type="button"
+          onClick={handleUnsubscribe}
+          className="text-[15px] text-white border bg-red-600 mt-4 border-none focus:outline-none hover:bg-red-700 focus:ring-4 focus:ring-red-200 font-thin rounded-full px-5 py-2.5 me-2 w-[100%]"
+        >
+          Удалить курс
         </button>
       </div>
     </>
