@@ -12,10 +12,22 @@ interface CourseItemProps {
 }
 
 const CourseItem = ({ course, status }: CourseItemProps) => {
+  const getImageForCourse = (courseName: string) => {
+    switch (courseName) {
+      case "Йога":
+        return "/yogaImg.jpg"; 
+      case "Стретчинг":
+        return "/stretchingImg.png";
+      case "Зумба":
+        return "/zumbaImg.png"; 
+      default:
+        return "";
+    }
+  };  
   return (
     <>
       <div className="mb-2 p-4 bg-white  rounded-3xl shadow-xl">
-        <img alt="Картинка" src="/path/to/image" width="330px" height="330px" />
+        <img alt="Картинка" src={getImageForCourse(course.name)} width="330px" height="330px" />
         <div className="text-[24px]">{course.name}</div>
         <div className="flex">
           <p className="bg-[#f7f7f7] p-1 rounded-2xl w-[90px] text-center mr-[6px] flex items-center h-[38px] justify-around">

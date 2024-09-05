@@ -1,10 +1,15 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import CourseItem from "@/components/CourseItem";
 import Header from "@/components/Header/Header";
 import ModalSelect from "@/components/Modal/ModalSelect";
 import ContentWrapper from "@/components/ContentWrapper";
+import { getCourses } from "@/utils/api";
 
 function Profile() {
+  useEffect(()=> {
+    getCourses();
+    console.log('ssss');
+  }, []) 
   const courses = [
     {
       name: "Йога",
