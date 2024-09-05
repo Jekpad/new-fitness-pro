@@ -1,11 +1,34 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import CourseItem from "@/components/CourseItem";
 import Header from "@/components/Header/Header";
 import ModalSelect from "@/components/Modal/ModalSelect";
 import ContentWrapper from "@/components/ContentWrapper";
+import {
+  getCourseById,
+  getUserSubscriptions,
+  getWorkoutById,
+  unsubscribeFromCourse,
+} from "@/utils/api";
+
+interface Course {
+  _id: string;
+  nameRU: string;
+  length: number;
+  time: string;
+  difficulty: string;
+  progress: number;
+  workouts: string[];
+  image: string;
+  courseId: string;
+  userId: string;
+}
+
+interface Workout {
+  name: string;
+}
 
 function Profile() {
-  const courses = [
+  /* const courses = [
     {
       name: "Йога",
       length: 25,
@@ -27,7 +50,38 @@ function Profile() {
       progress: 100,
       difficulty: "3",
     },
-  ];
+  ]; */
+
+  const [courses, setCourses] = useState<Course[]>([]);
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+  const [selectedWorkouts, setSelectedWorkouts] = useState<Workout[]>([]);
+
+  const userId = "tKtot8YAzFPLVgVYAoq16qfXNWs1"; // Получаем ID пользователя (замените на актуальный ID)
+
+  // Функция для получения курсов пользователя из БД
+  const fetchUserCourses = async () => {
+    try {
+      // Получаем список ID курсов пользователя
+      const userCoursesIds: string[] = await getUserSubscriptions(userId);
+
+      // Загружаем данные каждого курса по ID
+      const coursesData: Course[] = await Promise.all(
+        userCoursesIds.map(async (courseId) => {
+          const course = await getCourseById(courseId);
+          return course as Course;
+        })
+      );
+
+      setCourses(coursesData);
+    } catch (error) {
+      console.error("Ошибка при получении курсов:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchUserCourses();
+  }, []);
+
   const status = (progress: number) => {
     if (progress > 0 && progress < 100) {
       return "Продолжить";
@@ -38,9 +92,32 @@ function Profile() {
     }
   };
 
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const handleOpenModal = async (workoutsIds: string[]) => {
+    try {
+      const workoutsData = await Promise.all(
+        workoutsIds.map(async (workoutId) => {
+          return await getWorkoutById(workoutId);
+        })
+      );
 
-  const handleOpenModal = () => setIsModalOpen(true);
+      setSelectedWorkouts(workoutsData.filter(Boolean));
+      setIsModalOpen(true);
+    } catch (error) {
+      console.error("Ошибка при получении тренировок:", error);
+    }
+  };
+
+  const handleCourseUnsubscribe = async (courseId: string) => {
+    try {
+      await unsubscribeFromCourse(userId, courseId);
+      setCourses((prevCourses) =>
+        prevCourses.filter((course) => course._id !== courseId)
+      );
+    } catch (error) {
+      console.error("Ошибка при отписке от курса:", error);
+    }
+  };
+
   const handleCloseModal = () => setIsModalOpen(false);
 
   return (
@@ -73,19 +150,29 @@ function Profile() {
         <div className="mt-8 w-5/6">
           <h2 className="mb-4 text-[32px]">Мои курсы</h2>
           <div className="flex flex-wrap justify-between">
-            {courses.map((course, index) => (
+            {courses.map((course) => (
               <div
-                key={index}
-                onClick={handleOpenModal}
+                key={course._id}
+                onClick={() => handleOpenModal(course.workouts)}
                 className="w-full p-2 sm:w-1/2 md:w-1/3 lg:w-1/3"
               >
-                <CourseItem course={course} status={status(course.progress)} />
+                <CourseItem
+                  course={course}
+                  status={status(course.progress)}
+                  image={course.image}
+                  courseId={course._id}
+                  onCourseUnsubscribe={handleCourseUnsubscribe}
+                />
               </div>
             ))}
           </div>
         </div>
       </div>
-      <ModalSelect isOpen={isModalOpen} onClose={handleCloseModal} />
+      <ModalSelect
+        isOpen={isModalOpen}
+        onClose={handleCloseModal}
+        workouts={selectedWorkouts}
+      />
     </ContentWrapper>
   );
 }
