@@ -13,7 +13,7 @@ interface CourseInt {
 
 function Course() { // Сюда будет приходить ID курса с главной страницы после выбора пользователем
   const [courseData, setCourseData] = useState<CourseInt | null>(null);
-  const courseId = "kfpq8e";
+  const courseId = "ypox9r";
 
   useEffect(() => {
     const fetchCourseData = async () => {

@@ -1,25 +1,45 @@
-import { child, Database, get, ref, set } from "firebase/database";
-import { database } from "../../firebase";
+import { getDatabase, ref, set, get, child } from "firebase/database";
+import {
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  sendPasswordResetEmail,
+} from "firebase/auth";
+import { auth, database } from "../../firebase";
 
-//Регистация пользователя
+// Регистрация пользователя
 export const createUser = async (
-  database: Database,
   email: string,
-  uid: string
+  password: string,
+  username: string
 ) => {
+  const userCredential = await createUserWithEmailAndPassword(
+    auth,
+    email,
+    password
+  );
+  const uid = userCredential.user.uid;
+
   await set(ref(database, "users/" + uid), {
     email: email,
+    username: username,
     courses: {},
   });
 };
 
-//Вход
-export const getUser = async (database: Database, uid: string) => {
-  const dbRef = ref(database);
+// Вход пользователя
+export const getUser = async (email: string, password: string) => {
+  const userCredential = await signInWithEmailAndPassword(
+    auth,
+    email,
+    password
+  );
+  const uid = userCredential.user.uid;
+
+  const dbRef = ref(getDatabase());
   const snapshot = await get(child(dbRef, `users/${uid}`));
 
   if (!snapshot.exists()) {
-    throw new Error("No data available");
+    throw new Error("Пользователь не найден");
   }
 
   return snapshot.val();
@@ -74,7 +94,9 @@ export const subscribeToCourse = async (uid: string, courseId: string) => {
     if (!subscribedCourses.includes(courseId)) {
       subscribedCourses.push(courseId);
       await set(userCoursesRef, subscribedCourses);
-      console.log(`Пользователь ${uid} успешно подписался на курс ${courseId}.`);
+      console.log(
+        `Пользователь ${uid} успешно подписался на курс ${courseId}.`
+      );
     } else {
       console.log(`Пользователь уже подписан на курс ${courseId}.`);
     }
@@ -97,7 +119,9 @@ export const unsubscribeFromCourse = async (uid: string, courseId: string) => {
         (id: string) => id !== courseId
       );
       await set(userCoursesRef, updatedCourses);
-      console.log(`Пользователь ${uid} успешно отписался от курса ${courseId}.`);
+      console.log(
+        `Пользователь ${uid} успешно отписался от курса ${courseId}.`
+      );
     } else {
       console.log(`Пользователь не подписан на курс ${courseId}.`);
     }
@@ -138,5 +162,27 @@ export const getWorkoutById = async (workoutId: string) => {
   } catch (error) {
     console.error("Ошибка при получении тренировки: ", error);
     return null;
+  }
+};
+
+
+// Функция восстановления пароля
+export const resetPassword = async (email: string) => {
+  try {
+    await sendPasswordResetEmail(auth, email);
+    return {
+      success: true,
+      message: "Ссылка для восстановления пароля была отправлена на указанный email.",
+    };
+  } catch (error: unknown) {
+    let errorMessage = "Произошла неизвестная ошибка.";
+    if (error instanceof Error) {
+      errorMessage = error.message;
+    }
+    console.error("Ошибка при отправке ссылки на восстановление пароля: ", errorMessage);
+    return {
+      success: false,
+      message: errorMessage, //для использования в компонентах
+    };
   }
 };
