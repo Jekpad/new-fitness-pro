@@ -5,18 +5,12 @@ import {
   sendPasswordResetEmail,
 } from "firebase/auth";
 import { auth, database } from "../../firebase";
+import { Course } from "@/types/course";
+import { User } from "@/types/user";
 
 // Регистрация пользователя
-export const createUser = async (
-  email: string,
-  password: string,
-  username: string
-) => {
-  const userCredential = await createUserWithEmailAndPassword(
-    auth,
-    email,
-    password
-  );
+export const createUser = async (email: string, password: string, username: string) => {
+  const userCredential = await createUserWithEmailAndPassword(auth, email, password);
   const uid = userCredential.user.uid;
 
   await set(ref(database, "users/" + uid), {
@@ -28,11 +22,7 @@ export const createUser = async (
 
 // Вход пользователя
 export const getUser = async (email: string, password: string) => {
-  const userCredential = await signInWithEmailAndPassword(
-    auth,
-    email,
-    password
-  );
+  const userCredential = await signInWithEmailAndPassword(auth, email, password);
   const uid = userCredential.user.uid;
 
   const dbRef = ref(getDatabase());
@@ -45,8 +35,19 @@ export const getUser = async (email: string, password: string) => {
   return snapshot.val();
 };
 
+export const getUserInfo = async (uid: string): Promise<User> => {
+  const dbRef = ref(getDatabase());
+  const snapshot = await get(child(dbRef, `users/${uid}`));
+
+  if (!snapshot.exists()) {
+    throw new Error("Пользователь не найден");
+  }
+
+  return snapshot.val();
+};
+
 // Функция получения всех курсов
-export const getCourses = async () => {
+export const getCourses = async (): Promise<Course[]> => {
   try {
     const coursesRef = ref(database, "courses");
     const snapshot = await get(coursesRef);
@@ -65,7 +66,7 @@ export const getCourses = async () => {
 };
 
 // Функция получения данных конкретного курса
-export const getCourseById = async (courseId: string) => {
+export const getCourseById = async (courseId: string): Promise<Course | null> => {
   try {
     const courseRef = ref(database, `courses/${courseId}`);
     const snapshot = await get(courseRef);
@@ -94,9 +95,7 @@ export const subscribeToCourse = async (uid: string, courseId: string) => {
     if (!subscribedCourses.includes(courseId)) {
       subscribedCourses.push(courseId);
       await set(userCoursesRef, subscribedCourses);
-      console.log(
-        `Пользователь ${uid} успешно подписался на курс ${courseId}.`
-      );
+      console.log(`Пользователь ${uid} успешно подписался на курс ${courseId}.`);
     } else {
       console.log(`Пользователь уже подписан на курс ${courseId}.`);
     }
@@ -115,13 +114,9 @@ export const unsubscribeFromCourse = async (uid: string, courseId: string) => {
 
     // Удаление курса из списка подписок, если он там есть
     if (subscribedCourses.includes(courseId)) {
-      const updatedCourses = subscribedCourses.filter(
-        (id: string) => id !== courseId
-      );
+      const updatedCourses = subscribedCourses.filter((id: string) => id !== courseId);
       await set(userCoursesRef, updatedCourses);
-      console.log(
-        `Пользователь ${uid} успешно отписался от курса ${courseId}.`
-      );
+      console.log(`Пользователь ${uid} успешно отписался от курса ${courseId}.`);
     } else {
       console.log(`Пользователь не подписан на курс ${courseId}.`);
     }
@@ -164,7 +159,6 @@ export const getWorkoutById = async (workoutId: string) => {
     return null;
   }
 };
-
 
 // Функция восстановления пароля
 export const resetPassword = async (email: string) => {
