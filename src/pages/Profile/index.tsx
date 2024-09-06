@@ -3,7 +3,6 @@ import CourseItem from "@/components/CourseItem";
 import Header from "@/components/Header/Header";
 import ModalSelect from "@/components/Modal/ModalSelect";
 import ContentWrapper from "@/components/ContentWrapper";
-import { getCourses } from "@/utils/api";
 import {
   getCourseById,
   getUserSubscriptions,
@@ -29,45 +28,15 @@ interface Workout {
 }
 
 function Profile() {
-  useEffect(()=> {
-    getCourses();
-  }, []) 
-  // const courses = [
-  //   {
-  //     name: "Йога",
-  //     length: 25,
-  //     time: "20-50 мин/день",
-  //     progress: 40,
-  //     difficulty: "3",
-  //   },
-  //   {
-  //     name: "Стретчинг",
-  //     length: 25,
-  //     time: "20-50 мин/день",
-  //     progress: 0,
-  //     difficulty: "3",
-  //   },
-  //   {
-  //     name: "Зумба",
-  //     length: 25,
-  //     time: "20-50 мин/день",
-  //     progress: 100,
-  //     difficulty: "3",
-  //   },
-  // ];
-
   const [courses, setCourses] = useState<Course[]>([]);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [selectedWorkouts, setSelectedWorkouts] = useState<Workout[]>([]);
-
   const userId = "tKtot8YAzFPLVgVYAoq16qfXNWs1"; // Получаем ID пользователя (замените на актуальный ID)
-
   // Функция для получения курсов пользователя из БД
   const fetchUserCourses = async () => {
     try {
       // Получаем список ID курсов пользователя
       const userCoursesIds: string[] = await getUserSubscriptions(userId);
-
       // Загружаем данные каждого курса по ID
       const coursesData: Course[] = await Promise.all(
         userCoursesIds.map(async (courseId) => {
@@ -75,8 +44,8 @@ function Profile() {
           return course as Course;
         })
       );
-
-      setCourses(coursesData);
+      const filteredCoursesData = coursesData.filter(element => element !== undefined);
+      setCourses(filteredCoursesData);
     } catch (error) {
       console.error("Ошибка при получении курсов:", error);
     }
@@ -85,16 +54,6 @@ function Profile() {
   useEffect(() => {
     fetchUserCourses();
   }, []);
-
-  const status = (progress: number) => {
-    if (progress > 0 && progress < 100) {
-      return "Продолжить";
-    } else if (progress === 100) {
-      return "Начать заново";
-    } else {
-      return "Начать тренировки";
-    }
-  };
 
   const handleOpenModal = async (workoutsIds: string[]) => {
     try {
@@ -161,10 +120,8 @@ function Profile() {
                 className="w-full p-2 sm:w-1/2 md:w-1/3 lg:w-1/3"
               >
                 <CourseItem
+                  userId={userId}
                   course={course}
-                  status={status(course?.progress)}
-                  image={course?.image}
-                  courseId={course?._id}
                   onCourseUnsubscribe={handleCourseUnsubscribe}
                 />
               </div>
