@@ -1,9 +1,29 @@
 import Card from "@/components/Card";
 import ContentWrapper from "@/components/ContentWrapper";
 import Header from "@/components/Header/Header";
+import { getCourses } from "@/utils/api";
+import { useEffect, useState } from "react";
 const env = import.meta.env;
 
+
+interface Course {
+  _id: string;
+  nameRU: string;
+  image: string;
+}
+
 function Main() {
+  const [courses, setCourses] = useState<Course[]>([]);
+
+  useEffect(() => {
+    const fetchCourses = async () => {
+      const coursesData = await getCourses();
+      setCourses(coursesData);
+    };
+
+    fetchCourses();
+  }, []);
+
   console.log(env);
 
   return (
@@ -19,10 +39,9 @@ function Main() {
           </div>
         </div>
         <div className="mt-[50px] flex flex-wrap justify-start gap-[40px]">
-          <Card />
-          <Card />
-          <Card />
-          <Card />
+         {courses.map((course) => (
+            <Card key={course._id} id={course._id} nameRU={course.nameRU} image={course.image} />
+          ))}
         </div>
         <div className="rounded-[46px] bg-[#BCEC30] px-[26px] py-[16px]">Наверх ↑</div>
       </div>

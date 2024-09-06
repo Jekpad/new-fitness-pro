@@ -1,22 +1,37 @@
 interface Course {
-  name: string;
+  nameRU: string;
   length: number;
   time: string;
   difficulty: string;
   progress: number;
+  image: string;
 }
 
 interface CourseItemProps {
   course: Course;
   status: string;
+  image: string;
+  courseId: string;
+  onCourseUnsubscribe: (courseId: string) => void;
 }
 
-const CourseItem = ({ course, status }: CourseItemProps) => {
+const CourseItem = ({ course, status, image, courseId, onCourseUnsubscribe}: CourseItemProps) => {
+
+  const handleUnsubscribe = async (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    try {
+      await onCourseUnsubscribe(courseId);
+    } catch (error) {
+      console.error("Ошибка при отписке от курса:", error);
+    }
+  };
+
   return (
     <>
       <div className="mb-2 p-4 bg-white  rounded-3xl shadow-xl">
-        <img alt="Картинка" src="/path/to/image" width="330px" height="330px" />
-        <div className="text-[24px]">{course.name}</div>
+        <img alt="Картинка" src = {image} width="330px" height="330px" />
+        <div className="text-[24px]">{course.nameRU}</div>
         <div className="flex">
           <p className="bg-[#f7f7f7] p-1 rounded-2xl w-[90px] text-center mr-[6px] flex items-center h-[38px] justify-around">
             <img src="/time.svg" alt="Time Icon" />
@@ -42,6 +57,13 @@ const CourseItem = ({ course, status }: CourseItemProps) => {
           className="text-[15px] text-black border bg-[#bcec30] border-none focus:outline-none hover:bg-[#bcec30]-100 focus:ring-4 focus:ring-gray-100 font-thin rounded-full px-5 py-2.5 me-2 w-[100%]"
         >
           {status}
+        </button>
+        <button
+          type="button"
+          onClick={handleUnsubscribe}
+          className="text-[15px] text-white border bg-red-600 mt-4 border-none focus:outline-none hover:bg-red-700 focus:ring-4 focus:ring-red-200 font-thin rounded-full px-5 py-2.5 me-2 w-[100%]"
+        >
+          Удалить курс
         </button>
       </div>
     </>

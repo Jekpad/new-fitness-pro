@@ -1,4 +1,23 @@
-export default function Card() {
+import { subscribeToCourse } from "@/utils/api";
+
+interface CardProps {
+  id: string;
+  nameRU: string;
+  image: string;
+}
+
+export default function Card({ id, nameRU, image }: CardProps) {
+
+  const handleSubscribe = async () => {
+    const userId = "tKtot8YAzFPLVgVYAoq16qfXNWs1"; // Получать ID пользователя (пока хард)
+    try {
+      await subscribeToCourse(userId, id);
+      alert(`Вы успешно подписались на курс ${nameRU}`);
+    } catch (error) {
+      console.error("Ошибка при подписке на курс:", error);
+      alert("Произошла ошибка при подписке на курс");
+    }
+  }
   return (
     <div className="flex w-[360px] flex-col items-center justify-center gap-[24px] rounded-[30px] shadow-lg">
       <div className="flex w-[360px] flex-row-reverse">
@@ -13,11 +32,12 @@ export default function Card() {
         <img
           alt="изображение курса"
           className="h-[325px] w-[360px] rounded-[30px]"
-          src="/yogaImg.jpg"
+          // src="/yogaImg.jpg"
+          src = {image}
         />
       </div>
       <div className="flex flex-col gap-[20px] px-[30px] pb-[15px] pt-[24px]">
-        <h2 className="text-[32px] font-medium leading-[35px]">Йога</h2>
+        <h2 className="text-[32px] font-medium leading-[35px]">{nameRU}</h2>
         <div className="flex flex-wrap gap-[6px]">
           <div className="flex items-center justify-center gap-[6px] rounded-[50px] bg-[#F7F7F7] p-[10px]">
             <svg
@@ -104,9 +124,16 @@ export default function Card() {
               </defs>
             </svg>
             <div className="text-base font-normal leading-[18px]">Сложность</div>
+
           </div>
         </div>
       </div>
+      <button
+          onClick={handleSubscribe}
+          className="mt-4 rounded bg-green-500 px-4 py-2 text-white"
+        >
+          Добавить курс
+        </button>
     </div>
   );
 }
