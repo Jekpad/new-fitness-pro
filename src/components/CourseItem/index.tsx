@@ -1,5 +1,5 @@
-import { getWorkoutById } from "@/utils/api";
-import { useEffect } from "react";
+// import { getWorkoutById } from "@/utils/api";
+// import { useEffect } from "react";
 
 interface Course {
   _id: string,
@@ -18,20 +18,20 @@ interface CourseItemProps {
 }
 
 const CourseItem = ({ course, onCourseUnsubscribe}: CourseItemProps) => {
-  console.log(course)
-  const getWorkoutsData = async () => {
-    const workoutsData =  await Promise.all(
-      course.workouts.map(async (workout) => {
-        const course = await getWorkoutById(workout);
-        return course
-      })
-    );
-    console.log(workoutsData)
-  }
+  // console.log(course)
+  // const getWorkoutsData = async () => {
+  //   const workoutsData =  await Promise.all(
+  //     course.workouts.map(async (workout) => {
+  //       const course = await getWorkoutById(workout);
+  //       return course
+  //     })
+  //   );
+  //   console.log(workoutsData)
+  // }
 
-  useEffect(() => {
-    getWorkoutsData()
-  }, []);
+  // useEffect(() => {
+  //   getWorkoutsData()
+  // }, []);
 
   // const status = (progress: number) => {
   //   if (progress > 0 && progress < 100) {
