@@ -9,7 +9,8 @@ import Header from "@/components/Header/Header";
 import LoadingPlaceholder from "@/components/LoadingPlaceholder";
 import SolidStar from "@/assets/SolidStar.svg?react";
 import { useUserContext } from "@/contexts/userContext";
-import { getUserMockup } from "@/mockup/user";
+import ModalSignIn from "@/components/Modal/ModalSignIn";
+import ModalSignUp from "@/components/Modal/ModalSignUp";
 
 interface CourseInt {
   nameRU: string;
@@ -26,16 +27,19 @@ const Course = () => {
   const courseId = params.id;
 
   const [courseData, setCourseData] = useState<CourseInt | null>(null);
-  const { user, setUser } = useUserContext();
-  const courseSubscribed = user?.courses?.find((id) => id === courseId);
+  const { user } = useUserContext();
+  const [displayModal, setDisplayModal] = useState<"signin" | "signup" | null>(null);
 
-  console.log(user, courseSubscribed);
+  const courseSubscribed = user?.courses
+    ? Object.values(user.courses).find((id) => id === courseId)
+    : undefined;
 
   const auth = () => {
     // !!!
     // Тестовая авторизация, потом переписать
     // !!!
-    setUser(getUserMockup());
+    // setUser(getUserMockup());
+    setDisplayModal("signin");
   };
 
   const subscribeCourse = async () => {
@@ -53,6 +57,7 @@ const Course = () => {
 
     const fetchCourseData = async () => {
       const data = await getCourseById(courseId);
+
       setCourseData(data);
     };
 
@@ -83,27 +88,31 @@ const Course = () => {
       <section className="mt-[60px]">
         <p className="text-4xl font-bold">Подойдет для вас, если:</p>
         <div className="flex flex-row gap-4 mt-10 items-center flex-wrap justify-center">
-          {courseData?.fitting?.map((fit, index) => (
-            <div
-              key={index}
-              className="h-[141px] w-auto rounded-[20px] bg-black p-[17px] flex flex-row items-center overflow-y-hidden max-w-[431px]"
-            >
-              <div className="flex items-center pr-[25px] text-7xl text-[#BCEC30]">{index + 1}</div>
-              <p className="text-[24px] text-white">{fit}</p>
-            </div>
-          ))}
+          {courseData.fitting &&
+            Object.values(courseData.fitting).map((fit, index) => (
+              <div
+                key={index}
+                className="h-[141px] w-auto rounded-[20px] bg-black p-[17px] flex flex-row items-center overflow-y-hidden max-w-[431px]"
+              >
+                <div className="flex items-center pr-[25px] text-7xl text-[#BCEC30]">
+                  {index + 1}
+                </div>
+                <p className="text-[24px] text-white">{fit}</p>
+              </div>
+            ))}
         </div>
       </section>
 
       <section className="mt-[60px]">
         <h1 className=" text-4xl font-bold">Направления</h1>
         <div className="mt-10 w-full gap-x-[126px] gap-y-8 rounded-[20px] p-[30px] bg-color-acсent grid grid-cols-3">
-          {courseData?.directions?.map((direction, index) => (
-            <div key={index} className="flex flex-row gap-2 items-center">
-              <SolidStar />
-              <p className="text-2xl text-nowrap">{direction}</p>
-            </div>
-          ))}
+          {courseData.directions &&
+            Object.values(courseData.directions).map((direction, index) => (
+              <div key={index} className="flex flex-row gap-2 items-center">
+                <SolidStar />
+                <p className="text-2xl text-nowrap">{direction}</p>
+              </div>
+            ))}
         </div>
       </section>
 
@@ -162,6 +171,8 @@ const Course = () => {
           />
         </div>
       </div>
+      {displayModal === "signin" && <ModalSignIn setDisplayModal={setDisplayModal} />}
+      {displayModal === "signup" && <ModalSignUp setDisplayModal={setDisplayModal} />}
     </ContentWrapper>
   );
 };
