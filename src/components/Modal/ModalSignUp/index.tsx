@@ -1,59 +1,64 @@
-import { ChangeEvent, useState } from "react";
-
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import * as yup from "yup";
+import { yupResolver } from "@hookform/resolvers/yup";
 import { createUser } from "@/utils/api";
+import { FirebaseError } from "firebase/app";
 
 import ButtonRegular from "@/components/UI/Buttons/ButtonRegular";
 import ButtonTransparent from "@/components/UI/Buttons/ButtonTransparent";
 import InputRegular from "@/components/UI/Inputs/InputRegular";
+import { DisplayModalsType } from "../DisplayModalsType";
 
 type Props = {
-  setDisplayModal: (category: "signin" | "signup" | null) => void;
+  setDisplayModal: (category: DisplayModalsType) => void;
 };
 
-type SignupType = {
+type FormValues = {
   name: string;
   email: string;
-  passwordFirst: string;
-  passwordSecond: string;
+  password: string;
+  passwordRepeat: string;
+};
+
+const schema = yup.object({
+  name: yup.string().required("Необходимо указать имя"),
+  email: yup.string().email("Неверный формат email").required("Необходимо указать email"),
+  password: yup.string().min(6, "Пароль короче 6 символов").required("Необходимо указать пароль"),
+  passwordRepeat: yup
+    .string()
+    .min(6, "Повтор пароля короче 6 символов")
+    .required("Необходимо повторить пароль"),
+});
+
+export const SignUpForm = () => {
+  return useForm<FormValues>({
+    defaultValues: {
+      name: "",
+      email: "",
+      password: "",
+      passwordRepeat: "",
+    },
+    resolver: yupResolver(schema),
+    mode: "onBlur",
+  });
 };
 
 export default function ModalSignUp({ setDisplayModal }: Props) {
-  const [isNotCorrectEmail, setIsNotCorrectEmail] = useState<boolean>(false);
+  const { register, handleSubmit, formState } = SignUpForm();
+  const { errors } = formState;
+  const [customError, setCustomError] = useState("");
 
-  const [isNotCorrectPassword, setIsNotCorrectPassword] = useState<boolean>(false);
-
-  const [registrationData, setRegistrationData] = useState<SignupType>({
-    name: "",
-    email: "",
-    passwordFirst: "",
-    passwordSecond: "",
-  });
-
-  const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setRegistrationData({ ...registrationData, [name]: value });
-  };
-
-  const handleSignUp = async (e: React.MouseEvent<HTMLButtonElement>) => {
-    e.preventDefault();
-
-    setIsNotCorrectEmail(false);
-    setIsNotCorrectPassword(false);
-
-    if (registrationData.passwordFirst !== registrationData.passwordSecond) {
-      setIsNotCorrectPassword(true);
-      return;
-    }
+  const signUp = async (data: FormValues) => {
+    if (data.password !== data.passwordRepeat) return setCustomError("Пароли не совпадают");
 
     try {
-      await createUser(
-        registrationData.name,
-        registrationData.email,
-        registrationData.passwordFirst
-      );
+      await createUser(data.name, data.email, data.password);
       setDisplayModal("signin");
     } catch (error) {
-      console.error(error);
+      if (error instanceof FirebaseError && error.code == "auth/email-already-in-use")
+        return setCustomError("Данный email уже используется");
+      setCustomError("Непредвиденная ошибка");
     }
   };
 
@@ -69,59 +74,71 @@ export default function ModalSignUp({ setDisplayModal }: Props) {
         <div className="mb-12 flex items-center justify-center">
           <img src="/logo.png" alt="logo" />
         </div>
-        <form method="">
+
+        <form onSubmit={handleSubmit(signUp)}>
           <div className="flex flex-col items-center justify-center gap-[10px]">
-            <InputRegular
-              type="text"
-              name="name"
-              className="w-full"
-              placeholder="Как к вам возращаться"
-              value={registrationData.name}
-              onChange={handleInputChange}
-            />
-            <InputRegular
-              type="email"
-              name="email"
-              autoComplete="email"
-              className={
-                isNotCorrectEmail
-                  ? "w-full rounded-inputRadius border border-errorColor px-[18px] py-[12px] text-lg"
-                  : "w-full rounded-inputRadius border px-[18px] py-[12px] text-lg"
-              }
-              placeholder="Email"
-              value={registrationData.email}
-              onChange={handleInputChange}
-            />
-            <InputRegular
-              type="password"
-              name="passwordFirst"
-              autoComplete="new-password"
-              className="w-full"
-              placeholder="Пароль"
-              value={registrationData.passwordFirst}
-              onChange={handleInputChange}
-            />
-            <InputRegular
-              type="password"
-              name="passwordSecond"
-              autoComplete="new-password"
-              className="w-full"
-              placeholder="Повторите пароль"
-              value={registrationData.passwordSecond}
-              onChange={handleInputChange}
-            />
+            <div className="w-full">
+              <InputRegular
+                id="name"
+                name="name"
+                register={register}
+                placeholder="Как к вам обращаться"
+                className={
+                  errors.name?.message
+                    ? "w-full outline-none border-color-error"
+                    : "w-full outline-none"
+                }
+              />
+              <p className="text-center text-color-error">{errors.name?.message}</p>
+            </div>
+            <div className="w-full">
+              <InputRegular
+                register={register}
+                id="email"
+                name="email"
+                autoComplete="email"
+                placeholder="Email"
+                className={
+                  errors.email?.message
+                    ? "w-full outline-none border-color-error"
+                    : "w-full outline-none"
+                }
+              />
+              <p className="text-center text-color-error">{errors.email?.message}</p>
+            </div>
+            <div className="w-full">
+              <InputRegular
+                register={register}
+                id="password"
+                name="password"
+                autoComplete="new-password"
+                placeholder="Пароль"
+                className={
+                  errors.password?.message
+                    ? "w-full outline-none border-color-error"
+                    : "w-full outline-none"
+                }
+              />
+              <p className="text-center text-color-error">{errors.password?.message}</p>
+            </div>
+            <div className="w-full">
+              <InputRegular
+                register={register}
+                id="passwordRepeat"
+                name="passwordRepeat"
+                autoComplete="new-password"
+                className={
+                  errors.passwordRepeat?.message
+                    ? "w-full outline-none border-color-error"
+                    : "w-full outline-none"
+                }
+                placeholder="Повторите пароль"
+              />
+              <p className="text-center text-color-error">{errors.passwordRepeat?.message}</p>
+            </div>
           </div>
-          {isNotCorrectPassword && (
-            <div className="text-error w-[220px] text-center text-sm text-errorColor">
-              Пароли не совпадают...
-            </div>
-          )}
-          {isNotCorrectEmail && (
-            <div className="text-error w-[220px] text-center text-sm text-errorColor">
-              Данная почта уже используется. Попробуйте войти.
-            </div>
-          )}
-          <ButtonRegular className="mt-8 w-full" onClick={(e) => handleSignUp(e)}>
+          <p className="text-center text-color-error">{customError}</p>
+          <ButtonRegular className="mt-8 w-full" type="submit">
             Зарегистрироваться
           </ButtonRegular>
           <ButtonTransparent className="mt-2 w-full" onClick={() => setDisplayModal("signin")}>

@@ -11,7 +11,7 @@ export const createUser = async (name: string, email: string, password: string) 
   const userCredential = await createUserWithEmailAndPassword(auth, email, password);
   const uid = userCredential.user.uid;
 
-  await set(ref(database, "users/" + uid), {
+  return await set(ref(database, "users/" + uid), {
     uid: uid,
     name: name,
     email: email,
@@ -27,9 +27,9 @@ export const getUser = async (email: string, password: string) => {
   const dbRef = ref(getDatabase());
   const snapshot = await get(child(dbRef, `users/${uid}`));
 
-  if (!snapshot.exists()) {
-    throw new Error("Пользователь не найден");
-  }
+  // if (!snapshot.exists()) {
+  //   throw new Error("Пользователь не найден");
+  // }
 
   return snapshot.val();
 };

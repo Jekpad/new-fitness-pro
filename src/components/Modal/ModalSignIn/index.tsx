@@ -1,62 +1,66 @@
-import { ChangeEvent, useState } from "react";
-
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import * as yup from "yup";
+import { yupResolver } from "@hookform/resolvers/yup";
 import { getUser } from "@/utils/api";
 import { useUserContext } from "@/contexts/userContext";
+import { FirebaseError } from "firebase/app";
 
 import ButtonRegular from "@/components/UI/Buttons/ButtonRegular";
 import ButtonTransparent from "@/components/UI/Buttons/ButtonTransparent";
+import InputRegular from "@/components/UI/Inputs/InputRegular";
+import { DisplayModalsType } from "../DisplayModalsType";
+import ModalRestore from "../ModalRestore";
 
 type Props = {
-  setDisplayModal: (category: "signin" | "signup" | null) => void;
+  setDisplayModal: (category: DisplayModalsType) => void;
 };
 
-type SigninType = {
+type FormValues = {
   email: string;
   password: string;
 };
 
+const schema = yup.object({
+  email: yup.string().email("Неверный формат email").required("Необходимо указать email"),
+  password: yup.string().required("Необходимо указать пароль"),
+});
+
+export const SignUpForm = () => {
+  return useForm<FormValues>({
+    defaultValues: {
+      email: "",
+      password: "",
+    },
+    resolver: yupResolver(schema),
+    mode: "onBlur",
+  });
+};
+
 export default function ModalSignIn({ setDisplayModal }: Props) {
+  const { register, handleSubmit, formState, getValues } = SignUpForm();
+  const { errors } = formState;
   const { setUser } = useUserContext();
 
-  const [isOpenedEmailForm, setIsOpenedEmailForm] = useState<boolean>(false);
-
-  const [loginData, setLoginData] = useState<SigninType>({
-    email: "",
-    password: "",
-  });
-
-  const [isNotCorrectPassword, setIsNotCorrectPassword] = useState<boolean>(false);
-
-  const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setLoginData({
-      ...loginData,
-      [name]: value,
-    });
-  };
+  const [restorePassword, setRestorePassword] = useState({ message: false, displayModal: false });
 
   function handleRecoverPassword() {
-    setIsOpenedEmailForm(true);
-    setTimeout(() => {
-      setIsOpenedEmailForm(false);
-    }, 3000);
+    setRestorePassword((previous) => ({ ...previous, displayModal: true }));
+    setTimeout(() => setRestorePassword({ message: false, displayModal: false }), 10000);
   }
 
-  const handleLogin = async (e: React.MouseEvent<HTMLButtonElement>) => {
-    e.preventDefault();
-
-    setIsNotCorrectPassword(false);
-
+  const signIn = async (data: FormValues) => {
     try {
-      const data = await getUser(loginData.email, loginData.password);
-      if (!data.uid) throw new Error("Пользователь не найден");
-      setUser(data);
+      const result = await getUser(data.email, data.password);
+      setUser(result);
       setDisplayModal(null);
     } catch (error) {
-      console.error(error);
-      setIsNotCorrectPassword(true);
+      if (error instanceof FirebaseError && error.code == "auth/invalid-credential")
+        return setRestorePassword((previous) => ({ ...previous, message: true }));
     }
   };
+
+  if (restorePassword.displayModal) return <ModalRestore email={getValues().email} />;
 
   return (
     <div
@@ -70,38 +74,49 @@ export default function ModalSignIn({ setDisplayModal }: Props) {
         <div className="mb-12 flex items-center justify-center">
           <img src="/logo.png" alt="logo" />
         </div>
-        <form>
-          <div className="flex flex-col items-center justify-center">
-            <input
-              className="rounded-small border-gray-extra bg-white-base text-black-base placeholder-gray-extra mb-2.5 h-[52px] w-[280px] appearance-none rounded-inputRadius border px-[18px] py-[12px] text-lg"
-              name="email"
-              type="email"
-              autoComplete="username"
-              placeholder="Email"
-              value={loginData.email}
-              onChange={handleInputChange}
-            />
-            <input
-              className={
-                isNotCorrectPassword
-                  ? "rounded-small border-gray-extra bg-white-base text-black-base placeholder-gray-extra h-[52px] w-[280px] appearance-none rounded-inputRadius border border-errorColor px-[18px] py-[12px] text-lg"
-                  : "rounded-small border-gray-extra bg-white-base text-black-base placeholder-gray-extra h-[52px] w-[280px] appearance-none rounded-inputRadius border px-[18px] py-[12px] text-lg"
-              }
-              name="password"
-              type="password"
-              placeholder="Пароль"
-              autoComplete="current-password"
-              value={loginData.password}
-              onChange={handleInputChange}
-            />
-            {isNotCorrectPassword && (
+        <form onSubmit={handleSubmit(signIn)}>
+          <div className="flex flex-col items-center justify-center gap-[10px]">
+            <div className="w-full">
+              <InputRegular
+                register={register}
+                name="email"
+                type="email"
+                autoComplete="username"
+                placeholder="Email"
+                className={
+                  errors.email?.message
+                    ? "w-full outline-none border-color-error"
+                    : "w-full outline-none"
+                }
+              />
+              <p className="text-center text-color-error">{errors.email?.message}</p>
+            </div>
+            <div className="w-full">
+              <InputRegular
+                register={register}
+                name="password"
+                type="password"
+                placeholder="Пароль"
+                autoComplete="current-password"
+                className={
+                  errors.password?.message
+                    ? "w-full outline-none border-color-error"
+                    : "w-full outline-none"
+                }
+              />
+              <p className="text-center text-color-error">{errors.password?.message}</p>
+            </div>
+            {restorePassword && (
+              <p className="text-error w-full text-center text-sm text-color-error">
+                Пароль введен неверно, попробуйте еще раз.&nbsp;
+                <button type="button" className="underline" onClick={handleRecoverPassword}>
+                  Восстановить пароль?
+                </button>
+              </p>
+            )}
+            {/* {isNotCorrectPassword && (
               <>
-                <div className="text-error w-[270px] text-center text-sm text-errorColor">
-                  Пароль введен неверно, попробуйте еще раз.&nbsp;
-                  <button className="text-errorColor underline" onClick={handleRecoverPassword}>
-                    Восстановить пароль?
-                  </button>
-                </div>
+                
               </>
             )}
             {isOpenedEmailForm && (
@@ -115,9 +130,9 @@ export default function ModalSignIn({ setDisplayModal }: Props) {
                   </div>
                 </div>
               </div>
-            )}
+            )} */}
           </div>
-          <ButtonRegular onClick={(e) => handleLogin(e)} className="w-full mt-8">
+          <ButtonRegular type="submit" className="w-full mt-8">
             Войти
           </ButtonRegular>
           <ButtonTransparent className="w-full mt-2" onClick={() => setDisplayModal("signup")}>

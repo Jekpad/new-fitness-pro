@@ -4,10 +4,11 @@ import ModalSignIn from "../Modal/ModalSignIn";
 import ModalSignUp from "../Modal/ModalSignUp";
 import { useUserContext } from "@/contexts/userContext";
 import ButtonRegular from "../UI/Buttons/ButtonRegular";
+import { DisplayModalsType } from "../Modal/DisplayModalsType";
 
 export default function Header() {
   const { user, setUser } = useUserContext();
-  const [displayModal, setDisplayModal] = useState<"signin" | "signup" | null>(null);
+  const [displayModal, setDisplayModal] = useState<DisplayModalsType>(null);
 
   return (
     <header className="flex flex-row items-center">

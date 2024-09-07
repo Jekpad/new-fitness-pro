@@ -12,6 +12,7 @@ import { useUserContext } from "@/contexts/userContext";
 import ModalSignIn from "@/components/Modal/ModalSignIn";
 import ModalSignUp from "@/components/Modal/ModalSignUp";
 import ButtonRegular from "@/components/UI/Buttons/ButtonRegular";
+import { DisplayModalsType } from "@/components/Modal/DisplayModalsType";
 
 interface CourseInt {
   nameRU: string;
@@ -29,7 +30,7 @@ const Course = () => {
 
   const [courseData, setCourseData] = useState<CourseInt | null>(null);
   const { user } = useUserContext();
-  const [displayModal, setDisplayModal] = useState<"signin" | "signup" | null>(null);
+  const [displayModal, setDisplayModal] = useState<DisplayModalsType>(null);
 
   const courseSubscribed = user?.courses
     ? Object.values(user.courses).find((id) => id === courseId)
