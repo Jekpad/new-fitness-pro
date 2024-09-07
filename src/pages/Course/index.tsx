@@ -3,14 +3,15 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { getCourseById, subscribeToCourse } from "@/utils/api";
 
-import Button from "@/components/Button";
+import SolidStar from "@/assets/SolidStar.svg?react";
+
 import ContentWrapper from "@/components/ContentWrapper";
 import Header from "@/components/Header/Header";
 import LoadingPlaceholder from "@/components/LoadingPlaceholder";
-import SolidStar from "@/assets/SolidStar.svg?react";
 import { useUserContext } from "@/contexts/userContext";
 import ModalSignIn from "@/components/Modal/ModalSignIn";
 import ModalSignUp from "@/components/Modal/ModalSignUp";
+import ButtonRegular from "@/components/UI/Buttons/ButtonRegular";
 
 interface CourseInt {
   nameRU: string;
@@ -134,13 +135,17 @@ const Course = () => {
           </div>
           <div className="cursor-pointer pl-[28px]">
             {!user?.uid && (
-              <Button text="Войдите, чтобы добавить курс" className="w-full" onClick={auth} />
+              <ButtonRegular className="w-full" onClick={auth}>
+                Войдите, чтобы добавить курс
+              </ButtonRegular>
             )}
             {user?.uid && !courseSubscribed && (
-              <Button text="Добавить курс" className="w-full" onClick={subscribeCourse} />
+              <ButtonRegular className="w-full" onClick={subscribeCourse}>
+                Добавить курс
+              </ButtonRegular>
             )}
             {user?.uid && courseSubscribed && (
-              <Button text="Вы успешно подписались на курс" className="w-full" />
+              <ButtonRegular className="w-full">Вы успешно подписались на курс</ButtonRegular>
             )}
           </div>
         </div>

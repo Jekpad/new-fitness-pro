@@ -7,32 +7,21 @@ import {
 import { auth, database } from "../../firebase";
 
 // Регистрация пользователя
-export const createUser = async (
-  email: string,
-  password: string,
-  username: string
-) => {
-  const userCredential = await createUserWithEmailAndPassword(
-    auth,
-    email,
-    password
-  );
+export const createUser = async (name: string, email: string, password: string) => {
+  const userCredential = await createUserWithEmailAndPassword(auth, email, password);
   const uid = userCredential.user.uid;
 
   await set(ref(database, "users/" + uid), {
+    uid: uid,
+    name: name,
     email: email,
-    username: username,
-    courses: {},
+    courses: [],
   });
 };
 
 // Вход пользователя
 export const getUser = async (email: string, password: string) => {
-  const userCredential = await signInWithEmailAndPassword(
-    auth,
-    email,
-    password
-  );
+  const userCredential = await signInWithEmailAndPassword(auth, email, password);
   const uid = userCredential.user.uid;
 
   const dbRef = ref(getDatabase());
@@ -94,9 +83,7 @@ export const subscribeToCourse = async (uid: string, courseId: string) => {
     if (!subscribedCourses.includes(courseId)) {
       subscribedCourses.push(courseId);
       await set(userCoursesRef, subscribedCourses);
-      console.log(
-        `Пользователь ${uid} успешно подписался на курс ${courseId}.`
-      );
+      console.log(`Пользователь ${uid} успешно подписался на курс ${courseId}.`);
     } else {
       console.log(`Пользователь уже подписан на курс ${courseId}.`);
     }
@@ -115,13 +102,9 @@ export const unsubscribeFromCourse = async (uid: string, courseId: string) => {
 
     // Удаление курса из списка подписок, если он там есть
     if (subscribedCourses.includes(courseId)) {
-      const updatedCourses = subscribedCourses.filter(
-        (id: string) => id !== courseId
-      );
+      const updatedCourses = subscribedCourses.filter((id: string) => id !== courseId);
       await set(userCoursesRef, updatedCourses);
-      console.log(
-        `Пользователь ${uid} успешно отписался от курса ${courseId}.`
-      );
+      console.log(`Пользователь ${uid} успешно отписался от курса ${courseId}.`);
     } else {
       console.log(`Пользователь не подписан на курс ${courseId}.`);
     }
@@ -164,7 +147,6 @@ export const getWorkoutById = async (workoutId: string) => {
     return null;
   }
 };
-
 
 // Функция восстановления пароля
 export const resetPassword = async (email: string) => {

@@ -1,8 +1,9 @@
 import { useState } from "react";
+
 import ModalSignIn from "../Modal/ModalSignIn";
 import ModalSignUp from "../Modal/ModalSignUp";
 import { useUserContext } from "@/contexts/userContext";
-import Button from "../Button";
+import ButtonRegular from "../UI/Buttons/ButtonRegular";
 
 export default function Header() {
   const { user, setUser } = useUserContext();
@@ -18,7 +19,9 @@ export default function Header() {
       </div>
 
       {!user?.uid && (
-        <Button text="Войти" className="ml-auto" onClick={() => setDisplayModal("signin")} />
+        <ButtonRegular className="ml-auto" onClick={() => setDisplayModal("signin")}>
+          Войти
+        </ButtonRegular>
       )}
       {user?.uid && (
         <button className="ml-auto" onClick={() => setUser(null)}>

@@ -1,27 +1,29 @@
 import { ChangeEvent, useState } from "react";
 
-import { useUserData } from "../../../hooks/useUserData";
-import { userSignup } from "../../../utils/userAuth_api";
-import Button from "@/components/Button";
+import { createUser } from "@/utils/api";
+
+import ButtonRegular from "@/components/UI/Buttons/ButtonRegular";
+import ButtonTransparent from "@/components/UI/Buttons/ButtonTransparent";
+import InputRegular from "@/components/UI/Inputs/InputRegular";
 
 type Props = {
   setDisplayModal: (category: "signin" | "signup" | null) => void;
 };
 
 type SignupType = {
+  name: string;
   email: string;
   passwordFirst: string;
   passwordSecond: string;
 };
 
 export default function ModalSignUp({ setDisplayModal }: Props) {
-  const { login } = useUserData();
-
   const [isNotCorrectEmail, setIsNotCorrectEmail] = useState<boolean>(false);
 
   const [isNotCorrectPassword, setIsNotCorrectPassword] = useState<boolean>(false);
 
   const [registrationData, setRegistrationData] = useState<SignupType>({
+    name: "",
     email: "",
     passwordFirst: "",
     passwordSecond: "",
@@ -32,25 +34,27 @@ export default function ModalSignUp({ setDisplayModal }: Props) {
     setRegistrationData({ ...registrationData, [name]: value });
   };
 
-  const handleSignUp = async () => {
+  const handleSignUp = async (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+
+    setIsNotCorrectEmail(false);
     setIsNotCorrectPassword(false);
+
     if (registrationData.passwordFirst !== registrationData.passwordSecond) {
       setIsNotCorrectPassword(true);
       return;
     }
-    setIsNotCorrectEmail(false);
-    await userSignup(registrationData.email, registrationData.passwordFirst)
-      .then((userData) => {
-        login?.({
-          id: userData.uid,
-          email: userData.email,
-          token: userData.refreshToken,
-        });
-        // setIsOpenedSignupForm(false);
-      })
-      .catch(() => {
-        setIsNotCorrectEmail(true);
-      });
+
+    try {
+      await createUser(
+        registrationData.name,
+        registrationData.email,
+        registrationData.passwordFirst
+      );
+      setDisplayModal("signin");
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   return (
@@ -65,42 +69,47 @@ export default function ModalSignUp({ setDisplayModal }: Props) {
         <div className="mb-12 flex items-center justify-center">
           <img src="/logo.png" alt="logo" />
         </div>
-        <form>
-          <div className="flex flex-col items-center justify-center">
-            <div className=" ">
-              <input
-                className={
-                  isNotCorrectEmail
-                    ? "rounded-small border-gray-extra bg-white-base text-black-base placeholder-gray-extra mb-2.5 h-[52px] w-[280px] appearance-none rounded-inputRadius border border-errorColor px-[18px] py-[12px] text-lg"
-                    : "rounded-small border-gray-extra bg-white-base text-black-base placeholder-gray-extra mb-2.5 h-[52px] w-[280px] appearance-none rounded-inputRadius border px-[18px] py-[12px] text-lg"
-                }
-                name="email"
-                type="email"
-                placeholder="Email"
-                value={registrationData.email}
-                onChange={handleInputChange}
-              />
-            </div>
-            <div className="">
-              <input
-                className="border-error rounded-small border-gray-extra bg-white-base text-black-base placeholder-gray-extra mb-2.5 h-[52px] w-[280px] appearance-none rounded-inputRadius border px-[18px] py-[12px] text-lg"
-                name="passwordFirst"
-                type="password"
-                placeholder="Пароль"
-                value={registrationData.passwordFirst}
-                onChange={handleInputChange}
-              />
-            </div>
-            <div className="">
-              <input
-                className="border-error rounded-small border-gray-extra bg-white-base text-black-base placeholder-gray-extra h-[52px] w-[280px] appearance-none rounded-inputRadius border px-[18px] py-[12px] text-lg"
-                name="passwordSecond"
-                type="password"
-                placeholder="Повторите пароль"
-                value={registrationData.passwordSecond}
-                onChange={handleInputChange}
-              />
-            </div>
+        <form method="">
+          <div className="flex flex-col items-center justify-center gap-[10px]">
+            <InputRegular
+              type="text"
+              name="name"
+              className="w-full"
+              placeholder="Как к вам возращаться"
+              value={registrationData.name}
+              onChange={handleInputChange}
+            />
+            <InputRegular
+              type="email"
+              name="email"
+              autoComplete="email"
+              className={
+                isNotCorrectEmail
+                  ? "w-full rounded-inputRadius border border-errorColor px-[18px] py-[12px] text-lg"
+                  : "w-full rounded-inputRadius border px-[18px] py-[12px] text-lg"
+              }
+              placeholder="Email"
+              value={registrationData.email}
+              onChange={handleInputChange}
+            />
+            <InputRegular
+              type="password"
+              name="passwordFirst"
+              autoComplete="new-password"
+              className="w-full"
+              placeholder="Пароль"
+              value={registrationData.passwordFirst}
+              onChange={handleInputChange}
+            />
+            <InputRegular
+              type="password"
+              name="passwordSecond"
+              autoComplete="new-password"
+              className="w-full"
+              placeholder="Повторите пароль"
+              value={registrationData.passwordSecond}
+              onChange={handleInputChange}
+            />
           </div>
           {isNotCorrectPassword && (
             <div className="text-error w-[220px] text-center text-sm text-errorColor">
@@ -112,13 +121,12 @@ export default function ModalSignUp({ setDisplayModal }: Props) {
               Данная почта уже используется. Попробуйте войти.
             </div>
           )}
-          <Button text="Зарегистрироваться" className="mt-8 w-full" />
-          <button
-            className="disabled:bg-gray-light disabled:text-gray-dark disabled:border-gray-dark mt-3 h-[52px] w-[280px] rounded-buttonRadius border border-zinc-900 text-[18px] font-normal leading-[19.8px] transition-colors duration-300 hover:bg-bgColor active:bg-blackout"
-            onClick={() => setDisplayModal("signin")}
-          >
+          <ButtonRegular className="mt-8 w-full" onClick={(e) => handleSignUp(e)}>
+            Зарегистрироваться
+          </ButtonRegular>
+          <ButtonTransparent className="mt-2 w-full" onClick={() => setDisplayModal("signin")}>
             Войти
-          </button>
+          </ButtonTransparent>
         </form>
       </div>
     </div>

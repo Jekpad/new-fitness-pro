@@ -1,7 +1,10 @@
 import { ChangeEvent, useState } from "react";
-import Button from "@/components/Button";
-import { useUserContext } from "@/contexts/userContext";
+
 import { getUser } from "@/utils/api";
+import { useUserContext } from "@/contexts/userContext";
+
+import ButtonRegular from "@/components/UI/Buttons/ButtonRegular";
+import ButtonTransparent from "@/components/UI/Buttons/ButtonTransparent";
 
 type Props = {
   setDisplayModal: (category: "signin" | "signup" | null) => void;
@@ -13,7 +16,7 @@ type SigninType = {
 };
 
 export default function ModalSignIn({ setDisplayModal }: Props) {
-  const { user, setUser } = useUserContext();
+  const { setUser } = useUserContext();
 
   const [isOpenedEmailForm, setIsOpenedEmailForm] = useState<boolean>(false);
 
@@ -73,6 +76,7 @@ export default function ModalSignIn({ setDisplayModal }: Props) {
               className="rounded-small border-gray-extra bg-white-base text-black-base placeholder-gray-extra mb-2.5 h-[52px] w-[280px] appearance-none rounded-inputRadius border px-[18px] py-[12px] text-lg"
               name="email"
               type="email"
+              autoComplete="username"
               placeholder="Email"
               value={loginData.email}
               onChange={handleInputChange}
@@ -86,6 +90,7 @@ export default function ModalSignIn({ setDisplayModal }: Props) {
               name="password"
               type="password"
               placeholder="Пароль"
+              autoComplete="current-password"
               value={loginData.password}
               onChange={handleInputChange}
             />
@@ -112,14 +117,12 @@ export default function ModalSignIn({ setDisplayModal }: Props) {
               </div>
             )}
           </div>
-          <Button text="Войти" onClick={(e) => handleLogin(e)} className="w-full mt-8" />
-          <button
-            className="disabled:bg-gray-light disabled:text-gray-dark disabled:border-gray-dark mt-3 h-[52px] w-[280px] rounded-buttonRadius border border-zinc-900 text-[18px] font-normal leading-[19.8px] transition-colors duration-300 hover:bg-bgColor active:bg-blackout"
-            type="button"
-            onClick={() => setDisplayModal("signup")}
-          >
+          <ButtonRegular onClick={(e) => handleLogin(e)} className="w-full mt-8">
+            Войти
+          </ButtonRegular>
+          <ButtonTransparent className="w-full mt-2" onClick={() => setDisplayModal("signup")}>
             Зарегистрироваться
-          </button>
+          </ButtonTransparent>
         </form>
       </div>
     </div>
