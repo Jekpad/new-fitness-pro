@@ -7,9 +7,10 @@ export type Course = {
   duration: number;
   fitting: string[];
   image: string;
-  nameEn: string;
-  nameRu: string;
+  nameEN: string;
+  nameRU: string;
   order: number;
   time: string;
+  progress?: number;
   workouts: string[];
 };
