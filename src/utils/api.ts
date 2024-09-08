@@ -7,7 +7,6 @@ import {
 } from "firebase/auth";
 import { auth, database } from "../../firebase";
 import { Course } from "@/types/course";
-import { User } from "@/types/user";
 
 // Регистрация пользователя
 export const createUser = async (name: string, email: string, password: string) => {

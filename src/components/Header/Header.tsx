@@ -5,15 +5,21 @@ import ModalSignUp from "../Modal/ModalSignUp";
 import { useUserContext } from "@/contexts/userContext";
 import ButtonRegular from "../UI/Buttons/ButtonRegular";
 import { DisplayModalsType } from "../Modal/DisplayModalsType";
+import ArrowDown from "@/assets/ArrowDown.svg?react";
+import ModalUserInfo from "../Modal/ModalUserInfo";
+import { Link } from "react-router-dom";
+import { ROUTES } from "@/Routes";
 
 export default function Header() {
-  const { user, setUser } = useUserContext();
+  const { user } = useUserContext();
   const [displayModal, setDisplayModal] = useState<DisplayModalsType>(null);
 
   return (
     <header className="flex flex-row items-center">
       <div>
-        <img className="" src="/logo.png" alt="course_picture" width="220" height="35" />
+        <Link to={ROUTES.main.generateUrl({})}>
+          <img className="" src="/logo.png" alt="course_picture" width="220" height="35" />
+        </Link>
         <p className="mt-[15px] text-wrap text-lg text-[#7d7d7d]">
           Онлайн-тренировки для занятий дома
         </p>
@@ -25,8 +31,18 @@ export default function Header() {
         </ButtonRegular>
       )}
       {user?.uid && (
-        <button className="ml-auto" onClick={() => setUser(null)}>
-          Выйти
+        <button
+          className="ml-auto flex gap-2 items-center relative"
+          onClick={() =>
+            displayModal !== "userinfo" ? setDisplayModal("userinfo") : setDisplayModal(null)
+          }
+        >
+          <img src="/Profile.png" alt="Фото профиля" />
+          <p>{user.name}</p>
+          <ArrowDown width={8} height={8} />
+          {displayModal === "userinfo" && (
+            <ModalUserInfo setDisplayModal={setDisplayModal} className="absolute top-14 right-0" />
+          )}
         </button>
       )}
 
