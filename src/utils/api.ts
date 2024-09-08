@@ -3,6 +3,7 @@ import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   sendPasswordResetEmail,
+  updatePassword,
 } from "firebase/auth";
 import { auth, database } from "../../firebase";
 
@@ -185,4 +186,19 @@ export const resetPassword = async (email: string) => {
       message: errorMessage, //для использования в компонентах
     };
   }
+};
+
+// Функция для изменения пароля текущего пользователя
+export const changePassword = async (password: string) => {
+	try {
+		// Проверяем, что пользователь авторизован
+		if (!auth.currentUser) {
+			throw new Error('Нет авторизации');
+		}
+		// Обновляем пароль текущего пользователя
+		await updatePassword(auth.currentUser, password);
+	} catch (error) {
+		// Обрабатываем ошибки и выбрасываем их с сообщением
+		if (error instanceof Error) throw new Error(error.message);
+	}
 };
