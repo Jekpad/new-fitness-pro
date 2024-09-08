@@ -10,14 +10,15 @@ import { Course } from "@/types/course";
 import { User } from "@/types/user";
 
 // Регистрация пользователя
-export const createUser = async (email: string, password: string, username: string) => {
+export const createUser = async (name: string, email: string, password: string) => {
   const userCredential = await createUserWithEmailAndPassword(auth, email, password);
   const uid = userCredential.user.uid;
 
-  await set(ref(database, "users/" + uid), {
+  return await set(ref(database, "users/" + uid), {
+    uid: uid,
+    name: name,
     email: email,
-    username: username,
-    courses: {},
+    courses: [],
   });
 };
 
@@ -29,20 +30,9 @@ export const getUser = async (email: string, password: string) => {
   const dbRef = ref(getDatabase());
   const snapshot = await get(child(dbRef, `users/${uid}`));
 
-  if (!snapshot.exists()) {
-    throw new Error("Пользователь не найден");
-  }
-
-  return snapshot.val();
-};
-
-export const getUserInfo = async (uid: string): Promise<User> => {
-  const dbRef = ref(getDatabase());
-  const snapshot = await get(child(dbRef, `users/${uid}`));
-
-  if (!snapshot.exists()) {
-    throw new Error("Пользователь не найден");
-  }
+  // if (!snapshot.exists()) {
+  //   throw new Error("Пользователь не найден");
+  // }
 
   return snapshot.val();
 };
@@ -184,15 +174,15 @@ export const resetPassword = async (email: string) => {
 
 // Функция для изменения пароля текущего пользователя
 export const changePassword = async (password: string) => {
-	try {
-		// Проверяем, что пользователь авторизован
-		if (!auth.currentUser) {
-			throw new Error('Нет авторизации');
-		}
-		// Обновляем пароль текущего пользователя
-		await updatePassword(auth.currentUser, password);
-	} catch (error) {
-		// Обрабатываем ошибки и выбрасываем их с сообщением
-		if (error instanceof Error) throw new Error(error.message);
-	}
+  try {
+    // Проверяем, что пользователь авторизован
+    if (!auth.currentUser) {
+      throw new Error("Нет авторизации");
+    }
+    // Обновляем пароль текущего пользователя
+    await updatePassword(auth.currentUser, password);
+  } catch (error) {
+    // Обрабатываем ошибки и выбрасываем их с сообщением
+    if (error instanceof Error) throw new Error(error.message);
+  }
 };
