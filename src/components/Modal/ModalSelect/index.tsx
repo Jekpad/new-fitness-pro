@@ -1,3 +1,5 @@
+import Button from "@/components/Button";
+
 interface Workout {
   name: string;
 }

@@ -3,8 +3,6 @@ import ContentWrapper from "@/components/ContentWrapper";
 import Header from "@/components/Header/Header";
 import { getCourses } from "@/utils/api";
 import { useEffect, useState } from "react";
-const env = import.meta.env;
-
 
 interface Course {
   _id: string;
@@ -24,8 +22,6 @@ function Main() {
     fetchCourses();
   }, []);
 
-  console.log(env);
-
   return (
     <ContentWrapper>
       <Header />
@@ -39,7 +35,7 @@ function Main() {
           </div>
         </div>
         <div className="mt-[50px] flex flex-wrap justify-start gap-[40px]">
-         {courses.map((course) => (
+          {courses.map((course) => (
             <Card key={course._id} id={course._id} nameRU={course.nameRU} image={course.image} />
           ))}
         </div>
