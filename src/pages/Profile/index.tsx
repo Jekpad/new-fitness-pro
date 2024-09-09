@@ -46,6 +46,7 @@ function Profile() {
           return { ...course, progress: Math.round(Math.random() * 100) };
         });
         setCourses(filteredCoursesData);
+        console.log(filteredCoursesData)
       } catch (error) {
         console.error("Ошибка при получении курсов:", error);
       }
@@ -71,7 +72,7 @@ function Profile() {
 
   if (!user?.uid) return navigate(ROUTES.main.generateUrl({}));
 
-  console.log(courses);
+  // console.log(courses);
 
   return (
     <ContentWrapper>
