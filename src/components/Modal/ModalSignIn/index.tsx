@@ -106,7 +106,7 @@ export default function ModalSignIn({ setDisplayModal }: Props) {
               />
               <p className="text-center text-color-error">{errors.password?.message}</p>
             </div>
-            {restorePassword && (
+            {restorePassword.message && (
               <p className="text-error w-full text-center text-sm text-color-error">
                 Пароль введен неверно, попробуйте еще раз.&nbsp;
                 <button type="button" className="underline" onClick={handleRecoverPassword}>

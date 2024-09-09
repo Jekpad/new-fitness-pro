@@ -6,6 +6,7 @@ import {
   updatePassword,
 } from "firebase/auth";
 import { auth, database } from "../../firebase";
+import { Course } from "@/types/course";
 
 // Регистрация пользователя
 export const createUser = async (name: string, email: string, password: string) => {
@@ -36,7 +37,7 @@ export const getUser = async (email: string, password: string) => {
 };
 
 // Функция получения всех курсов
-export const getCourses = async () => {
+export const getCourses = async (): Promise<Course[]> => {
   try {
     const coursesRef = ref(database, "courses");
     const snapshot = await get(coursesRef);
@@ -55,7 +56,7 @@ export const getCourses = async () => {
 };
 
 // Функция получения данных конкретного курса
-export const getCourseById = async (courseId: string) => {
+export const getCourseById = async (courseId: string): Promise<Course | null> => {
   try {
     const courseRef = ref(database, `courses/${courseId}`);
     const snapshot = await get(courseRef);
@@ -172,15 +173,15 @@ export const resetPassword = async (email: string) => {
 
 // Функция для изменения пароля текущего пользователя
 export const changePassword = async (password: string) => {
-	try {
-		// Проверяем, что пользователь авторизован
-		if (!auth.currentUser) {
-			throw new Error('Нет авторизации');
-		}
-		// Обновляем пароль текущего пользователя
-		await updatePassword(auth.currentUser, password);
-	} catch (error) {
-		// Обрабатываем ошибки и выбрасываем их с сообщением
-		if (error instanceof Error) throw new Error(error.message);
-	}
+  try {
+    // Проверяем, что пользователь авторизован
+    if (!auth.currentUser) {
+      throw new Error("Нет авторизации");
+    }
+    // Обновляем пароль текущего пользователя
+    await updatePassword(auth.currentUser, password);
+  } catch (error) {
+    // Обрабатываем ошибки и выбрасываем их с сообщением
+    if (error instanceof Error) throw new Error(error.message);
+  }
 };

@@ -1,43 +1,91 @@
-import { subscribeToCourse } from "@/utils/api";
+import { Course } from "@/types/course";
+import React, { useState } from "react";
+import { subscribeToCourse, unsubscribeFromCourse } from "@/utils/api";
 
-interface CardProps {
-  id: string;
-  nameRU: string;
-  image: string;
-}
+import Difficult5 from "@/assets/difficult5.svg?react";
+import Difficult4 from "@/assets/difficult4.svg?react";
+import Difficult3 from "@/assets/difficult3.svg?react";
+import Difficult2 from "@/assets/difficult2.svg?react";
+import Difficult1 from "@/assets/difficult1.svg?react";
+import CourseAdd from "@/assets/CourseAdd.svg?react";
+import CourseRemove from "@/assets/CourseRemove.svg?react";
+import { ROUTES } from "@/Routes";
+import { useNavigate } from "react-router-dom";
+import ButtonRegular from "../UI/Buttons/ButtonRegular";
+import ProgressBar from "../ProgressBar";
 
-export default function Card({ id, nameRU, image }: CardProps) {
+type CardProps = {
+  uid?: string;
+  initialSubscribed: boolean;
+  course: Course;
+};
 
-  const handleSubscribe = async () => {
-    const userId = "tKtot8YAzFPLVgVYAoq16qfXNWs1"; // Получать ID пользователя (пока хард)
+export default function Card({ uid, initialSubscribed, course }: CardProps) {
+  const navigate = useNavigate();
+
+  const [subscribed, setSubscribed] = useState(initialSubscribed);
+
+  const handleSubscribe = async (e: React.MouseEvent<SVGSVGElement, MouseEvent>) => {
+    e.stopPropagation();
+
+    if (!uid) return alert("Авторизуйтесь");
+
     try {
-      await subscribeToCourse(userId, id);
-      alert(`Вы успешно подписались на курс ${nameRU}`);
+      await subscribeToCourse(uid, course._id);
+      alert(`Вы успешно подписались на курс ${course.nameRU}`);
+      setSubscribed(true);
     } catch (error) {
       console.error("Ошибка при подписке на курс:", error);
       alert("Произошла ошибка при подписке на курс");
     }
-  }
+  };
+
+  const handleUnsubscribe = async (e: React.MouseEvent<SVGSVGElement, MouseEvent>) => {
+    e.stopPropagation();
+
+    if (!uid) return alert("Авторизуйтесь");
+    try {
+      await unsubscribeFromCourse(uid, course._id);
+      setSubscribed(false);
+      alert(`Вы успешно отписались с курса ${course.nameRU}`);
+      if (uid) return window.location.reload();
+    } catch (error) {
+      console.error("Ошибка при отписке от курса:", error);
+    }
+  };
+
   return (
-    <div className="flex w-[360px] flex-col items-center justify-center gap-[24px] rounded-[30px] shadow-lg">
-      <div className="flex w-[360px] flex-row-reverse">
-        <svg
-          className="absolute h-[56px] w-[56px] pr-[20px] pt-[20px]"
-          width="56"
-          height="56"
-          viewBox="0 0 28 28"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-        ></svg>
+    <div
+      onClick={() => {
+        if (subscribed) return;
+        navigate(ROUTES.course.generateUrl({ id: course._id }));
+      }}
+      className="flex w-[360px] flex-col items-start justify-center gap-[24px] rounded-[30px] shadow-lg">
+      <div className="relative flex w-[360px] flex-row">
         <img
-          alt="изображение курса"
+          alt={course.nameRU}
           className="h-[325px] w-[360px] rounded-[30px]"
-          // src="/yogaImg.jpg"
-          src = {image}
+          src={course.image}
         />
+        {!subscribed && (
+          <div className="group absolute right-5 top-5 z-10 cursor-pointer">
+            <CourseAdd onClick={handleSubscribe} />
+            <span className="absolute left-6 top-6 hidden whitespace-nowrap rounded border-[1px] border-black bg-color-background px-2 py-1 text-sm group-hover:inline-block">
+              Добавить курс
+            </span>
+          </div>
+        )}
+        {subscribed && (
+          <div className="group absolute right-5 top-5 z-10 cursor-pointer">
+            <CourseRemove onClick={handleUnsubscribe} />
+            <span className="absolute left-6 top-6 hidden whitespace-nowrap rounded border-[1px] border-black bg-color-background px-2 py-1 text-sm group-hover:inline-block">
+              Удалить курс
+            </span>
+          </div>
+        )}
       </div>
       <div className="flex flex-col gap-[20px] px-[30px] pb-[15px] pt-[24px]">
-        <h2 className="text-[32px] font-medium leading-[35px]">{nameRU}</h2>
+        <h2 className="text-[32px] font-medium leading-[35px]">{course.nameRU}</h2>
         <div className="flex flex-wrap gap-[6px]">
           <div className="flex items-center justify-center gap-[6px] rounded-[50px] bg-[#F7F7F7] p-[10px]">
             <svg
@@ -45,8 +93,7 @@ export default function Card({ id, nameRU, image }: CardProps) {
               height="18"
               viewBox="0 0 18 18"
               fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
+              xmlns="http://www.w3.org/2000/svg">
               <path
                 d="M7.5 2.625C7.5 1.79657 6.82843 1.125 6 1.125C5.17157 1.125 4.5 1.79657 4.5 2.625C2.84315 2.625 1.5 3.96815 1.5 5.625H16.5C16.5 3.96815 15.1569 2.625 13.5 2.625C13.5 1.79657 12.8284 1.125 12 1.125C11.1716 1.125 10.5 1.79657 10.5 2.625H7.5Z"
                 fill="#202020"
@@ -58,7 +105,7 @@ export default function Card({ id, nameRU, image }: CardProps) {
                 fill="#202020"
               />
             </svg>
-            <div className="text-base font-normal leading-[18px]">25 дней</div>
+            <div className="text-base font-normal leading-[18px]">{course.duration} дней</div>
           </div>
           <div className="flex items-center justify-center gap-[6px] rounded-[50px] bg-[#F7F7F7] p-[10px]">
             <svg
@@ -66,8 +113,7 @@ export default function Card({ id, nameRU, image }: CardProps) {
               height="18"
               viewBox="0 0 18 18"
               fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
+              xmlns="http://www.w3.org/2000/svg">
               <path
                 fillRule="evenodd"
                 clipRule="evenodd"
@@ -75,65 +121,28 @@ export default function Card({ id, nameRU, image }: CardProps) {
                 fill="#202020"
               />
             </svg>
-            <div className="text-base font-normal leading-[18px]">20-50 мин/день</div>
+            <div className="text-base font-normal leading-[18px]">{course.time} мин/день</div>
           </div>
           <div className="flex items-center justify-center gap-[6px] rounded-[50px] bg-[#F7F7F7] p-[10px]">
-            <svg
-              width="18"
-              height="18"
-              viewBox="0 0 18 18"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <g clipPath="url(#clip0_17_2324)">
-                <path
-                  fillRule="evenodd"
-                  clipRule="evenodd"
-                  d="M15 2.625C15.2984 2.625 15.5845 2.74353 15.7955 2.9545C16.0065 3.16548 16.125 3.45163 16.125 3.75V14.25C16.125 14.5484 16.0065 14.8345 15.7955 15.0455C15.5845 15.2565 15.2984 15.375 15 15.375C14.7016 15.375 14.4155 15.2565 14.2045 15.0455C13.9935 14.8345 13.875 14.5484 13.875 14.25V3.75C13.875 3.45163 13.9935 3.16548 14.2045 2.9545C14.4155 2.74353 14.7016 2.625 15 2.625Z"
-                  fill="#D9D9D9"
-                />
-                <path
-                  fillRule="evenodd"
-                  clipRule="evenodd"
-                  d="M12 4.875C12.2984 4.875 12.5845 4.99353 12.7955 5.2045C13.0065 5.41548 13.125 5.70163 13.125 6V14.25C13.125 14.5484 13.0065 14.8345 12.7955 15.0455C12.5845 15.2565 12.2984 15.375 12 15.375C11.7016 15.375 11.4155 15.2565 11.2045 15.0455C10.9935 14.8345 10.875 14.5484 10.875 14.25V6C10.875 5.70163 10.9935 5.41548 11.2045 5.2045C11.4155 4.99353 11.7016 4.875 12 4.875Z"
-                  fill="#D9D9D9"
-                />
-                <path
-                  fillRule="evenodd"
-                  clipRule="evenodd"
-                  d="M9 7.125C9.29837 7.125 9.58452 7.24353 9.7955 7.4545C10.0065 7.66548 10.125 7.95163 10.125 8.25V14.25C10.125 14.5484 10.0065 14.8345 9.7955 15.0455C9.58452 15.2565 9.29837 15.375 9 15.375C8.70163 15.375 8.41548 15.2565 8.2045 15.0455C7.99353 14.8345 7.875 14.5484 7.875 14.25V8.25C7.875 7.95163 7.99353 7.66548 8.2045 7.4545C8.41548 7.24353 8.70163 7.125 9 7.125Z"
-                  fill="#00C1FF"
-                />
-                <path
-                  fillRule="evenodd"
-                  clipRule="evenodd"
-                  d="M6 9.375C6.29837 9.375 6.58452 9.49353 6.7955 9.7045C7.00647 9.91548 7.125 10.2016 7.125 10.5V14.25C7.125 14.5484 7.00647 14.8345 6.7955 15.0455C6.58452 15.2565 6.29837 15.375 6 15.375C5.70163 15.375 5.41548 15.2565 5.2045 15.0455C4.99353 14.8345 4.875 14.5484 4.875 14.25V10.5C4.875 10.2016 4.99353 9.91548 5.2045 9.7045C5.41548 9.49353 5.70163 9.375 6 9.375Z"
-                  fill="#00C1FF"
-                />
-                <path
-                  fillRule="evenodd"
-                  clipRule="evenodd"
-                  d="M3 11.625C3.29837 11.625 3.58452 11.7435 3.7955 11.9545C4.00647 12.1655 4.125 12.4516 4.125 12.75V14.25C4.125 14.5484 4.00647 14.8345 3.7955 15.0455C3.58452 15.2565 3.29837 15.375 3 15.375C2.70163 15.375 2.41548 15.2565 2.2045 15.0455C1.99353 14.8345 1.875 14.5484 1.875 14.25V12.75C1.875 12.4516 1.99353 12.1655 2.2045 11.9545C2.41548 11.7435 2.70163 11.625 3 11.625Z"
-                  fill="#00C1FF"
-                />
-              </g>
-              <defs>
-                <clipPath id="clip0_17_2324">
-                  <rect width="18" height="18" fill="white" />
-                </clipPath>
-              </defs>
-            </svg>
-            <div className="text-base font-normal leading-[18px]">Сложность</div>
-
+            {course.difficulty == 5 && <Difficult5 />}
+            {course.difficulty == 4 && <Difficult4 />}
+            {course.difficulty == 3 && <Difficult3 />}
+            {course.difficulty == 2 && <Difficult2 />}
+            {course.difficulty == 1 && <Difficult1 />}
+            Сложность {course.difficulty}
           </div>
         </div>
+        {subscribed && course.progress && (
+          <>
+            <ProgressBar text="Прогресс" progress={course.progress} />
+            <ButtonRegular>
+              {course.progress == 0 && "Начать тренировки"}
+              {course.progress > 0 && course.progress < 100 && "Продолжить"}
+              {course.progress == 100 && "Начать заново"}
+            </ButtonRegular>
+          </>
+        )}
       </div>
-      <button
-          onClick={handleSubscribe}
-          className="mt-4 rounded bg-green-500 px-4 py-2 text-white"
-        >
-          Добавить курс
-        </button>
     </div>
   );
 }
