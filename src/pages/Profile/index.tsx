@@ -18,13 +18,14 @@ import { getCourseById, getUserSubscriptions } from "@/utils/api";
 import { useNavigate } from "react-router-dom";
 import { ROUTES } from "@/Routes";
 import Card from "@/components/Card";
+import ModalChangePassword from "@/components/Modal/isModalChangePassword";
 
 function Profile() {
   const navigate = useNavigate();
 
   const { user, setUser } = useUserContext();
   const [courses, setCourses] = useState<Course[]>([]);
-
+  const [isModalChangePasswordOpen, setModalChangePasswod] = useState<boolean>(false);
   // const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   // const [selectedWorkouts, setSelectedWorkouts] = useState<Workout[]>([]);
   // const userId = "tKtot8YAzFPLVgVYAoq16qfXNWs1"; // Получаем ID пользователя (замените на актуальный ID)
@@ -90,7 +91,7 @@ function Profile() {
               <p className="text-[18px]">Пароль: ******</p>
             </div>
             <div className="mt-auto">
-              <ButtonRegular className="min-w-[192px]">Изменить пароль</ButtonRegular>
+              <ButtonRegular className="min-w-[192px]" onClick={() => setModalChangePasswod(true)}>Изменить пароль</ButtonRegular>
               <ButtonTransparent
                 className="ml-[10px] min-w-[192px]"
                 onClick={() => {
@@ -111,6 +112,7 @@ function Profile() {
           </div>
         </div>
       </div>
+      <ModalChangePassword isOpen={isModalChangePasswordOpen}/>
       {/* <ModalSelect isOpen={isModalOpen} onClose={handleCloseModal} workouts={selectedWorkouts} /> */}
     </ContentWrapper>
   );
