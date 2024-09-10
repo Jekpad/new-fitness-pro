@@ -70,6 +70,9 @@ function Profile() {
   //     console.error("Ошибка при получении тренировок:", error);
   //   }
   // };
+  const handleCloseModal = () => {
+    setModalChangePasswod(false)
+  }
 
   if (!user?.uid) return navigate(ROUTES.main.generateUrl({}));
 
@@ -112,7 +115,7 @@ function Profile() {
           </div>
         </div>
       </div>
-      <ModalChangePassword isOpen={isModalChangePasswordOpen}/>
+      <ModalChangePassword isOpen={isModalChangePasswordOpen} onClose={handleCloseModal}/>
       {/* <ModalSelect isOpen={isModalOpen} onClose={handleCloseModal} workouts={selectedWorkouts} /> */}
     </ContentWrapper>
   );
