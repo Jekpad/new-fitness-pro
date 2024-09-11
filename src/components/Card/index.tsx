@@ -18,9 +18,10 @@ type CardProps = {
   uid?: string;
   initialSubscribed: boolean;
   course: Course;
+  handleDisplayWorkouts: (course: Course) => void;
 };
 
-export default function Card({ uid, initialSubscribed, course }: CardProps) {
+export default function Card({ uid, initialSubscribed, course, handleDisplayWorkouts }: CardProps) {
   const navigate = useNavigate();
 
   const [subscribed, setSubscribed] = useState(initialSubscribed);
@@ -132,10 +133,10 @@ export default function Card({ uid, initialSubscribed, course }: CardProps) {
             Сложность {course.difficulty}
           </div>
         </div>
-        {subscribed && course.progress && (
+        {subscribed && course.progress !== undefined && (
           <>
             <ProgressBar text="Прогресс" progress={course.progress} />
-            <ButtonRegular>
+            <ButtonRegular onClick={() => handleDisplayWorkouts(course)}>
               {course.progress == 0 && "Начать тренировки"}
               {course.progress > 0 && course.progress < 100 && "Продолжить"}
               {course.progress == 100 && "Начать заново"}
