@@ -41,8 +41,10 @@ const ModalWorkoutSelect = ({ course, setDisplayModal }: Props) => {
   return (
     <div
       className="fixed inset-0 z-50 flex items-center justify-center bg-gray-600 bg-opacity-50"
-      onClick={() => setDisplayModal(null)}>
-      <div className="flex h-[500px] w-[400px] flex-col justify-around rounded-3xl bg-white p-6 shadow-lg">
+      onMouseDown={() => setDisplayModal(null)}>
+      <div
+        onMouseDown={(e) => e.stopPropagation()}
+        className="flex h-[500px] w-[400px] flex-col justify-around rounded-3xl bg-white p-6 shadow-lg">
         <p className="text-center text-lg font-medium">Выберите тренировку</p>
         <div className="custom-scroll flex h-[300px] flex-col gap-[10px] overflow-y-scroll pr-5">
           {workouts?.map((workout, index) => (

@@ -42,10 +42,10 @@ const ModalProgress = ({
 
   return (
     <div
-      onClick={() => setIsPopUpDisplay(false)}
+      onMouseDown={() => setIsPopUpDisplay(false)}
       className="fixed bottom-0 left-0 right-0 top-0 z-50 flex max-h-full w-full items-center justify-center overflow-y-auto overflow-x-hidden bg-black bg-opacity-20 md:inset-0">
       <form
-        onClick={(e) => e.stopPropagation()}
+        onMouseDown={(e) => e.stopPropagation()}
         onSubmit={handleSubmit(handleSaveProgress)}
         className="relative box-content max-h-[516px] max-w-[346px] rounded-[30px] bg-color-component-background p-10 shadow-lg">
         <h3 className="w-full text-[32px] leading-[32px]">Мой прогресс</h3>
