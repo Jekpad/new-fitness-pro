@@ -1,4 +1,4 @@
-import { getDatabase, ref, set, get, child } from "firebase/database";
+import { getDatabase, ref, set, get, child, remove } from "firebase/database";
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
@@ -88,24 +88,9 @@ export const subscribeToCourse = async (uid: string, courseId: string) => {
 };
 
 // Отписка от курса
-export const unsubscribeFromCourse = async (uid: string, courseId: string) => {
-  try {
-    const userCoursesRef = ref(database, `users/${uid}/courses`);
-
-    const snapshot = await get(userCoursesRef);
-    const subscribedCourses = snapshot.val() || [];
-
-    // Удаление курса из списка подписок, если он там есть
-    if (subscribedCourses.includes(courseId)) {
-      const updatedCourses = subscribedCourses.filter((id: string) => id !== courseId);
-      await set(userCoursesRef, updatedCourses);
-      console.log(`Пользователь ${uid} успешно отписался от курса ${courseId}.`);
-    } else {
-      console.log(`Пользователь не подписан на курс ${courseId}.`);
-    }
-  } catch (error) {
-    console.error("Ошибка при отписке от курса: ", error);
-  }
+export const unsubscribeFromCourse = async (uid: string, courseId: string): Promise<void> => {
+  const courseRef = ref(database, `users/${uid}/courses/${courseId}`);
+  await remove(courseRef);
 };
 
 // Функция получения всех подписок пользователя

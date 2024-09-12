@@ -33,11 +33,11 @@ export default function Card({ uid, initialSubscribed, course, handleDisplayWork
 
     try {
       await subscribeToCourse(uid, course._id);
-      alert(`Вы успешно подписались на курс ${course.nameRU}`);
       setSubscribed(true);
+      alert(`Вы успешно подписались на курс ${course.nameRU}`);
     } catch (error) {
       console.error("Ошибка при подписке на курс:", error);
-      alert("Произошла ошибка при подписке на курс");
+      return alert("Произошла ошибка при подписке на курс");
     }
   };
 
@@ -51,7 +51,7 @@ export default function Card({ uid, initialSubscribed, course, handleDisplayWork
       alert(`Вы успешно отписались с курса ${course.nameRU}`);
       if (uid) return window.location.reload();
     } catch (error) {
-      console.error("Ошибка при отписке от курса:", error);
+      return console.error("Ошибка при отписке от курса:", error);
     }
   };
 

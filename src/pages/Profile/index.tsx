@@ -48,11 +48,13 @@ function Profile() {
         );
 
         coursesData = Object.values(coursesData).map((course) => {
-          const userCourse = Object.values(userCourses).find(
-            (userCourse) => userCourse._id === course._id,
-          );
+          const courseProgress =
+            Object.values(userCourses).find((userCourse) => userCourse._id === course._id)
+              ?.progress || 0;
 
-          return { ...course, progress: userCourse?.progress || 0 };
+          const courseWorkouts = Object.keys(course.workouts).length;
+
+          return { ...course, progress: (courseProgress / courseWorkouts) * 100 };
         });
 
         setCourses(coursesData);
