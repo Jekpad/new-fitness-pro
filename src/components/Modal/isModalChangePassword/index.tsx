@@ -28,6 +28,8 @@ const ModalChangePassword: React.FC<ModalSelectProps> = ({ isOpen, onClose }) =>
     setError(null);  
     changePassword(password);
     onClose();
+    setPassword('');
+    setPasswordRepeat('');
   };
 
   return (
