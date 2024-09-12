@@ -15,14 +15,27 @@ const ModalChangePassword: React.FC<ModalSelectProps> = ({ isOpen, onClose }) =>
 
   if (!isOpen) return null;
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (password.length < 6) {
+      setError("Пароль должен содержать не менее 6 символов");
+      return;
+    }
+
     if (password !== passwordRepeat) {
       setError("Пароли не совпадают");
       return;
     }
-    setError(null);  
-    changePassword(password);
+
+    setError(null); 
+
+    try {
+      await changePassword(password);
+      onClose();
+    } catch (err) {
+      setError("Не удалось изменить пароль. Попробуйте снова.");
+    }
   };
 
   return (
@@ -44,7 +57,7 @@ const ModalChangePassword: React.FC<ModalSelectProps> = ({ isOpen, onClose }) =>
               <InputRegular
                 id="password"
                 name="password"
-                type="password" 
+                type="password"
                 autoComplete="new-password"
                 placeholder="Пароль"
                 value={password}
@@ -56,7 +69,7 @@ const ModalChangePassword: React.FC<ModalSelectProps> = ({ isOpen, onClose }) =>
               <InputRegular
                 id="passwordRepeat"
                 name="passwordRepeat"
-                type="password" 
+                type="password"
                 autoComplete="new-password"
                 placeholder="Повторите пароль"
                 value={passwordRepeat}
@@ -66,7 +79,7 @@ const ModalChangePassword: React.FC<ModalSelectProps> = ({ isOpen, onClose }) =>
             </div>
           </div>
           {error && <p className="text-red-500 mt-4">{error}</p>}
-          <ButtonRegular className="mt-8 w-full" type="submit">
+          <ButtonRegular className="mt-8 w-full" type="submit" onClick={() => changePassword(password)}>
             Изменить пароль
           </ButtonRegular>
         </form>
