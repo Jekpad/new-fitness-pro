@@ -8,9 +8,28 @@ interface ModalSelectProps {
   onClose: () => void;
 }
 
-const ModalChangePassword: React.FC<ModalSelectProps> = ({isOpen, onClose}) => {
-  const [password, setPassword] = useState<string>('')
+const ModalChangePassword: React.FC<ModalSelectProps> = ({ isOpen, onClose }) => {
+  const [password, setPassword] = useState<string>('');
+  const [passwordRepeat, setPasswordRepeat] = useState<string>('');
+  const [error, setError] = useState<string | null>(null);
+
   if (!isOpen) return null;
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (password.length < 6) {
+      setError("Пароль меньше 6 символов");
+      return;
+    }
+    if (password !== passwordRepeat) {
+      setError("Пароли не совпадают");
+      return;
+    }
+    setError(null);  
+    changePassword(password);
+    onClose();
+  };
+
   return (
     <div
       className="fixed left-0 top-0 right-0 bottom-0 z-50 flex h-[100%] min-h-[100vh] w-[100%] flex-col items-center justify-center bg-black bg-opacity-20"
@@ -24,27 +43,35 @@ const ModalChangePassword: React.FC<ModalSelectProps> = ({isOpen, onClose}) => {
           <img src="/logo.png" alt="logo" />
         </div>
 
-        <form>
+        <form onSubmit={handleSubmit}>
           <div className="flex flex-col items-center justify-center gap-[10px]">
             <div className="w-full">
               <InputRegular
                 id="password"
                 name="password"
+                type="password" 
                 autoComplete="new-password"
                 placeholder="Пароль"
+                value={password}
+                onInput={(e) => setPassword(e.currentTarget.value)}
+                className="w-full"
               />
             </div>
             <div className="w-full">
               <InputRegular
                 id="passwordRepeat"
                 name="passwordRepeat"
+                type="password" 
                 autoComplete="new-password"
                 placeholder="Повторите пароль"
-                onInput={(e) => setPassword(e.currentTarget.value)}
+                value={passwordRepeat}
+                onInput={(e) => setPasswordRepeat(e.currentTarget.value)}
+                className="w-full"
               />
             </div>
           </div>
-          <ButtonRegular className="mt-8 w-full" type="submit" onClick={() => changePassword(password)}>
+          {error && <p className="text-red-500 mt-4">{error}</p>}
+          <ButtonRegular className="mt-8 w-full" type="submit">
             Изменить пароль
           </ButtonRegular>
         </form>
