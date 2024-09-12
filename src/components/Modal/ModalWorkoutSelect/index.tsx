@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { ROUTES } from "@/Routes";
-import { getWorkoutById } from "@/utils/api";
+import { getUserCourseInfo, getWorkoutById } from "@/utils/api";
 
-import { Course } from "@/types/course";
+import { Course, UserCourse } from "@/types/course";
 import { Workout } from "@/types/workout";
 
 import { DisplayModalsType } from "../DisplayModalsType";
@@ -16,7 +16,8 @@ interface Props {
 }
 
 const ModalWorkoutSelect = ({ course, setDisplayModal }: Props) => {
-  const [workouts, setWorkouts] = useState<Workout[]>([]);
+  const [workouts, setWorkouts] = useState<Workout[] | undefined>();
+  const [userWorkouts, setUserWorkouts] = useState<UserCourse["workouts"] | undefined>();
 
   useEffect(() => {
     const getWorkouts = async () => {
@@ -25,8 +26,10 @@ const ModalWorkoutSelect = ({ course, setDisplayModal }: Props) => {
           return await getWorkoutById(value);
         });
         const workoutsArray: Workout[] = await Promise.all(workoutPromises);
+        const userWorkouts = (await getUserCourseInfo(course._id)).workouts;
 
         setWorkouts(workoutsArray);
+        setUserWorkouts(userWorkouts);
       } catch (error) {
         console.error(error);
       }
@@ -42,13 +45,14 @@ const ModalWorkoutSelect = ({ course, setDisplayModal }: Props) => {
       <div className="flex h-[500px] w-[400px] flex-col justify-around rounded-3xl bg-white p-6 shadow-lg">
         <p className="text-center text-lg font-medium">Выберите тренировку</p>
         <div className="custom-scroll flex h-[300px] flex-col gap-[10px] overflow-y-scroll pr-5">
-          {workouts.map((workout, index) => (
+          {workouts?.map((workout, index) => (
             <>
               <Link
-                to={ROUTES.workout.generateUrl({ id: workout._id })}
+                to={ROUTES.workout.generateUrl({ courseid: course._id, workoutid: workout._id })}
                 key={index}
-                className="flex gap-[10px] bg-opacity-25 py-[2px] hover:bg-color-inactive">
-                {workout.done ? <CheckCircleDone /> : <CheckCircle />}
+                className="flex items-center gap-[10px] bg-opacity-25 py-[2px] hover:bg-color-inactive">
+                {userWorkouts?.[workout._id]?.done ? <CheckCircleDone /> : <CheckCircle />}
+
                 <p className="font-medium">{workout.name}</p>
               </Link>
               <hr className="mb-2 h-[2px] w-full bg-[#C4C4C4]"></hr>

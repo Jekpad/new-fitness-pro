@@ -1,4 +1,4 @@
-import { getDatabase, ref, set, get, child, remove } from "firebase/database";
+import { getDatabase, ref, set, get, child, remove, update } from "firebase/database";
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
@@ -6,7 +6,7 @@ import {
   updatePassword,
 } from "firebase/auth";
 import { auth, database } from "../../firebase";
-import { Course } from "@/types/course";
+import { Course, UserCourse } from "@/types/course";
 import { Workout } from "@/types/workout";
 
 // Регистрация пользователя
@@ -94,22 +94,22 @@ export const unsubscribeFromCourse = async (uid: string, courseId: string): Prom
 };
 
 // Функция получения всех подписок пользователя
-export const getUserSubscriptions = async (uid: string): Promise<Course[]> => {
+export const getUserSubscriptions = async (
+  uid: string,
+): Promise<Record<string, UserCourse> | null> => {
   try {
     const userSubscriptionsRef = ref(database, `users/${uid}/courses`);
     const snapshot = await get(userSubscriptionsRef);
     const subscribedCourses = snapshot.val();
 
     if (!subscribedCourses) {
-      return [];
+      return null;
     }
-
-    console.log(subscribedCourses);
 
     return subscribedCourses;
   } catch (error) {
     console.error("Ошибка при получении подписок на курсы пользователя: ", error);
-    return [];
+    return null;
   }
 };
 
@@ -123,16 +123,42 @@ export const getWorkoutById = async (workoutId: string): Promise<Workout> => {
   return snapshot.val();
 };
 
-// export const getUserCourseInfo = async (workoutId: string): Promise<Workout[]> => {
-//   if (!auth.currentUser) throw new Error("Пользователь не авторизован");
+export const setProgress = async (
+  courseId: string,
+  workoutId: string,
+  done: boolean,
+  exercisesProgress: number[],
+) => {
+  await set(
+    ref(database, `users/${auth.currentUser?.uid}/courses/${courseId}/workouts/${workoutId}`),
+    { done: done, exercises: exercisesProgress },
+  );
 
-//   const workoutRef = ref(database, `users/${auth.currentUser.uid}workouts/${workoutId}`);
-//   const snapshot = await get(workoutRef);
+  // Количество пройденных пользователем тренировок
+  const userWorkoutsSnapshot = await get(
+    ref(database, `users/${auth.currentUser?.uid}/courses/${courseId}/workouts/`),
+  );
+  const userWorkouts = userWorkoutsSnapshot.val();
+  const userWorkoutsCount = Object.values(userWorkouts).reduce(
+    (accumulator: number, current: any) => accumulator + +current.done,
+    0,
+  );
 
-//   if (!snapshot.exists()) throw new Error("Данные не найдены");
+  await update(ref(database, `users/${auth.currentUser?.uid}/courses/${courseId}/`), {
+    progress: userWorkoutsCount,
+  });
+};
 
-//   return snapshot.val();
-// };
+export const getUserCourseInfo = async (courseId: string): Promise<UserCourse> => {
+  if (!auth.currentUser) throw new Error("Пользователь не авторизован");
+
+  const workoutRef = ref(database, `users/${auth.currentUser.uid}/courses/${courseId}`);
+  const snapshot = await get(workoutRef);
+
+  if (!snapshot.exists()) throw new Error("Данные не найдены");
+
+  return snapshot.val();
+};
 
 // Функция восстановления пароля
 export const resetPassword = async (email: string) => {
