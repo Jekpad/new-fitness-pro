@@ -175,9 +175,9 @@ export const resetPassword = async (email: string) => {
 export const changePassword = async (password: string) => {
   try {
     // Проверяем, что пользователь авторизован
-    if (!auth.currentUser) {
-      throw new Error("Нет авторизации");
-    }
+    // if (!auth.currentUser) {
+    //   throw new Error("Нет авторизации");
+    // }
     // Обновляем пароль текущего пользователя
     await updatePassword(auth.currentUser, password);
   } catch (error) {

@@ -53,6 +53,7 @@ export default function Card({ uid, initialSubscribed, course }: CardProps) {
       console.error("Ошибка при отписке от курса:", error);
     }
   };
+  // console.log(course)
 
   return (
     <div
@@ -135,7 +136,9 @@ export default function Card({ uid, initialSubscribed, course }: CardProps) {
         {subscribed && course.progress && (
           <>
             <ProgressBar text="Прогресс" progress={course.progress} />
-            <ButtonRegular>
+            <ButtonRegular onClick={() => {
+                        navigate(ROUTES.workout.generateUrl({ id: course._id }));
+                      }}>
               {course.progress == 0 && "Начать тренировки"}
               {course.progress > 0 && course.progress < 100 && "Продолжить"}
               {course.progress == 100 && "Начать заново"}
