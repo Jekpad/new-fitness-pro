@@ -1,14 +1,6 @@
 import { useEffect, useState } from "react";
-// import CourseItem from "@/components/CourseItem";
 import Header from "@/components/Header/Header";
-// import ModalSelect from "@/components/Modal/ModalSelect";
 import ContentWrapper from "@/components/ContentWrapper";
-// import {
-//   getCourseById,
-//   getUserSubscriptions,
-//   getWorkoutById,
-//   unsubscribeFromCourse,
-// } from "@/utils/api";
 import { useUserContext } from "@/contexts/userContext";
 import ButtonRegular from "@/components/UI/Buttons/ButtonRegular";
 import ButtonTransparent from "@/components/UI/Buttons/ButtonTransparent";
@@ -20,15 +12,12 @@ import { ROUTES } from "@/Routes";
 import Card from "@/components/Card";
 import ModalChangePassword from "@/components/Modal/isModalChangePassword";
 
-function Profile() {
+const Profile = () => {
   const navigate = useNavigate();
 
   const { user, setUser } = useUserContext();
   const [courses, setCourses] = useState<Course[]>([]);
   const [isModalChangePasswordOpen, setModalChangePasswod] = useState<boolean>(false);
-  // const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
-  // const [selectedWorkouts, setSelectedWorkouts] = useState<Workout[]>([]);
-  // const userId = "tKtot8YAzFPLVgVYAoq16qfXNWs1"; // Получаем ID пользователя (замените на актуальный ID)
 
   useEffect(() => {
     const fetchUserCourses = async () => {
@@ -55,35 +44,26 @@ function Profile() {
 
     fetchUserCourses();
   }, [user]);
-
-  // const handleOpenModal = async (workoutsIds: string[]) => {
-  //   try {
-  //     const workoutsData = await Promise.all(
-  //       workoutsIds.map(async (workoutId) => {
-  //         return await getWorkoutById(workoutId);
-  //       })
-  //     );
-
-  //     setSelectedWorkouts(workoutsData.filter(Boolean));
-  //     setIsModalOpen(true);
-  //   } catch (error) {
-  //     console.error("Ошибка при получении тренировок:", error);
-  //   }
-  // };
   const handleCloseModal = () => {
     setModalChangePasswod(false)
   }
+  useEffect(() => {
+    const returnToMain = () => {
+      navigate(ROUTES.main.generateUrl({}));
+    };
 
-  if (!user?.uid) return navigate(ROUTES.main.generateUrl({}));
+    if (!user?.uid) return returnToMain();
 
-  // console.log(courses);
+
+  }, [user, navigate]);
+  // if (!user?.uid) return navigate(ROUTES.main.generateUrl({}));
 
   return (
     <ContentWrapper>
       <Header />
       <div className="flex w-full flex-col">
         <div className="mt-[50px]">
-          <h2 className="text-start text-[40px] font-semibold">Профиль</h2>
+          <h2 className="text-start text-[40px] font-semibold" data-testid="test">Профиль</h2>
         </div>
         <div className="mt-4 flex gap-[33px] rounded-2xl bg-color-component-background p-10 shadow-lg">
           <img src="/ProfilePicture.png" alt="Картинка" width={197} height={197} />
@@ -116,7 +96,6 @@ function Profile() {
         </div>
       </div>
       <ModalChangePassword isOpen={isModalChangePasswordOpen} onClose={handleCloseModal}/>
-      {/* <ModalSelect isOpen={isModalOpen} onClose={handleCloseModal} workouts={selectedWorkouts} /> */}
     </ContentWrapper>
   );
 }
