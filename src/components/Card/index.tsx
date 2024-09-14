@@ -54,7 +54,6 @@ export default function Card({ uid, initialSubscribed, course, handleDisplayWork
       return console.error("Ошибка при отписке от курса:", error);
     }
   };
-  // console.log(course)
 
   return (
     <div
@@ -62,11 +61,11 @@ export default function Card({ uid, initialSubscribed, course, handleDisplayWork
         if (subscribed) return;
         navigate(ROUTES.course.generateUrl({ id: course._id }));
       }}
-      className="flex w-[360px] flex-col items-start justify-center gap-[24px] rounded-[30px] shadow-lg">
-      <div className="relative flex w-[360px] flex-row">
+      className="flex flex-col items-start justify-center gap-[24px] rounded-[30px] shadow-lg w-full max-w-[343px] md:w-[360px]">
+      <div className="relative flex flex-row w-full">
         <img
           alt={course.nameRU}
-          className="h-[325px] w-[360px] rounded-[30px]"
+          className="h-[325px] w-full rounded-[30px]"
           src={course.image}
         />
         {!subscribed && (

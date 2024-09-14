@@ -20,7 +20,7 @@ export default function Header() {
         <Link to={ROUTES.main.generateUrl({})}>
           <img className="" src="/logo.png" alt="course_picture" width="220" height="35" />
         </Link>
-        <p className="mt-[15px] text-wrap text-lg text-[#7d7d7d]">
+        <p className="hidden md:block mt-[15px] text-wrap text-lg text-[#7d7d7d]">
           Онлайн-тренировки для занятий дома
         </p>
       </div>
