@@ -54,6 +54,7 @@ export default function Card({ uid, initialSubscribed, course, handleDisplayWork
       return console.error("Ошибка при отписке от курса:", error);
     }
   };
+  // console.log(course)
 
   return (
     <div

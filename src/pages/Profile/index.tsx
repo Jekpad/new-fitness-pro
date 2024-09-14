@@ -20,12 +20,14 @@ import { ROUTES } from "@/Routes";
 import Card from "@/components/Card";
 import { DisplayModalsType } from "@/components/Modal/DisplayModalsType";
 import ModalWorkoutSelect from "@/components/Modal/ModalWorkoutSelect";
+import ModalChangePassword from "@/components/Modal/isModalChangePassword";
 
 function Profile() {
   const navigate = useNavigate();
 
   const { user, setUser } = useUserContext();
   const [courses, setCourses] = useState<Course[]>([]);
+  const [isModalChangePasswordOpen, setModalChangePasswod] = useState<boolean>(false);
   const [selectedCourse, setSelectedCourse] = useState<Course | null>(null);
   const [displayModal, setDisplayModal] = useState<DisplayModalsType>(null);
 
@@ -39,9 +41,11 @@ function Profile() {
       if (!user?.uid) return;
 
       try {
-        const userCourses: Course[] = await getUserSubscriptions(user?.uid);
+        const userCourses = await getUserSubscriptions(user?.uid);
 
-        let coursesData: Course[] = await Promise.all(
+        if (!userCourses) return;
+
+        let coursesData = await Promise.all(
           Object.keys(userCourses).map(async (courseId) => {
             return await getCourseById(courseId);
           }),
@@ -56,7 +60,6 @@ function Profile() {
 
           return { ...course, progress: (courseProgress / courseWorkouts) * 100 };
         });
-
         setCourses(coursesData);
       } catch (error) {
         console.error(error);
@@ -65,6 +68,10 @@ function Profile() {
 
     fetchUserCourses();
   }, []);
+
+  const handleCloseModal = () => {
+    setModalChangePasswod(false);
+  };
 
   if (!user?.uid) return navigate(ROUTES.main.generateUrl({}));
   return (
@@ -83,7 +90,9 @@ function Profile() {
               <p className="text-[18px]">Пароль: ******</p>
             </div>
             <div className="mt-auto">
-              <ButtonRegular className="min-w-[192px]">Изменить пароль</ButtonRegular>
+              <ButtonRegular className="min-w-[192px]" onClick={() => setModalChangePasswod(true)}>
+                Изменить пароль
+              </ButtonRegular>
               <ButtonTransparent
                 className="ml-[10px] min-w-[192px]"
                 onClick={() => {
@@ -110,6 +119,7 @@ function Profile() {
           </div>
         </div>
       </div>
+      <ModalChangePassword isOpen={isModalChangePasswordOpen} onClose={handleCloseModal} />
       {displayModal === "workout" && selectedCourse && (
         <ModalWorkoutSelect course={selectedCourse} setDisplayModal={setDisplayModal} />
       )}
