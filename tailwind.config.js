@@ -24,6 +24,9 @@ export default {
 				'color-purple': 'var(--color-purple)',
 				errorColor: '#DB0030',
 			},
+			fontFamily: {
+				sans: ['Roboto', 'sans-serif'],
+			  },
 		},
 	},
 	plugins: [],
