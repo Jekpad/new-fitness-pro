@@ -46,7 +46,7 @@ export default function ModalSignIn({ setDisplayModal }: Props) {
 
   function handleRecoverPassword() {
     setRestorePassword((previous) => ({ ...previous, displayModal: true }));
-    setTimeout(() => setRestorePassword({ message: false, displayModal: false }), 10000);
+    setTimeout(() => setRestorePassword({ message: false, displayModal: false }), 5000);
   }
 
   const signIn = async (data: FormValues) => {
@@ -64,13 +64,11 @@ export default function ModalSignIn({ setDisplayModal }: Props) {
 
   return (
     <div
-      className="fixed left-0 top-0 bottom-0 right-0 z-50 flex h-[100%] min-h-[100vh] w-[100%] min-w-[375px] flex-col items-center justify-center bg-black bg-opacity-20"
-      onClick={() => setDisplayModal(null)}
-    >
+      className="fixed bottom-0 left-0 right-0 top-0 z-50 flex h-[100%] min-h-[100vh] w-[100%] min-w-[375px] flex-col items-center justify-center bg-black bg-opacity-20"
+      onMouseDown={() => setDisplayModal(null)}>
       <div
-        className="block w-[100%] max-w-[360px] rounded-blockRadiusMax border-solid border-zinc-300 bg-color-component-background p-10 rounded-[30px]"
-        onClick={(e) => e.stopPropagation()}
-      >
+        className="rounded-blockRadiusMax block w-[100%] max-w-[360px] rounded-[30px] border-solid border-zinc-300 bg-color-component-background p-10"
+        onMouseDown={(e) => e.stopPropagation()}>
         <div className="mb-12 flex items-center justify-center">
           <img src="/logo.png" alt="logo" />
         </div>
@@ -85,7 +83,7 @@ export default function ModalSignIn({ setDisplayModal }: Props) {
                 placeholder="Email"
                 className={
                   errors.email?.message
-                    ? "w-full outline-none border-color-error"
+                    ? "w-full border-color-error outline-none"
                     : "w-full outline-none"
                 }
               />
@@ -100,7 +98,7 @@ export default function ModalSignIn({ setDisplayModal }: Props) {
                 autoComplete="current-password"
                 className={
                   errors.password?.message
-                    ? "w-full outline-none border-color-error"
+                    ? "w-full border-color-error outline-none"
                     : "w-full outline-none"
                 }
               />
@@ -114,28 +112,11 @@ export default function ModalSignIn({ setDisplayModal }: Props) {
                 </button>
               </p>
             )}
-            {/* {isNotCorrectPassword && (
-              <>
-                
-              </>
-            )}
-            {isOpenedEmailForm && (
-              <div className="absolute left-0 top-0 z-50 flex min-h-[100vh] w-[100%] min-w-[375px] flex-col items-center justify-center bg-black bg-opacity-20">
-                <div className="flex h-[450px] w-[100%] max-w-[360px] items-center rounded-blockRadiusMax border-solid border-zinc-300 bg-white px-20 py-10">
-                  <div className="flex flex-col items-center justify-center">
-                    <img src="/images/logo.png" alt="logo" />
-                    <div className="mt-10 text-center text-[18px]">
-                      Ссылка для востановления пароля отправлена на {loginData.email}
-                    </div>
-                  </div>
-                </div>
-              </div>
-            )} */}
           </div>
-          <ButtonRegular type="submit" className="w-full mt-8">
+          <ButtonRegular type="submit" className="mt-8 w-full">
             Войти
           </ButtonRegular>
-          <ButtonTransparent className="w-full mt-2" onClick={() => setDisplayModal("signup")}>
+          <ButtonTransparent className="mt-2 w-full" onClick={() => setDisplayModal("signup")}>
             Зарегистрироваться
           </ButtonTransparent>
         </form>

@@ -18,6 +18,8 @@ import { getCourseById, getUserSubscriptions } from "@/utils/api";
 import { useNavigate } from "react-router-dom";
 import { ROUTES } from "@/Routes";
 import Card from "@/components/Card";
+import { DisplayModalsType } from "@/components/Modal/DisplayModalsType";
+import ModalWorkoutSelect from "@/components/Modal/ModalWorkoutSelect";
 import ModalChangePassword from "@/components/Modal/isModalChangePassword";
 
 function Profile() {
@@ -26,58 +28,52 @@ function Profile() {
   const { user, setUser } = useUserContext();
   const [courses, setCourses] = useState<Course[]>([]);
   const [isModalChangePasswordOpen, setModalChangePasswod] = useState<boolean>(false);
-  // const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
-  // const [selectedWorkouts, setSelectedWorkouts] = useState<Workout[]>([]);
-  // const userId = "tKtot8YAzFPLVgVYAoq16qfXNWs1"; // Получаем ID пользователя (замените на актуальный ID)
+  const [selectedCourse, setSelectedCourse] = useState<Course | null>(null);
+  const [displayModal, setDisplayModal] = useState<DisplayModalsType>(null);
+
+  const handleDisplayWorkouts = async (course: Course) => {
+    setSelectedCourse(course);
+    setDisplayModal("workout");
+  };
 
   useEffect(() => {
     const fetchUserCourses = async () => {
       if (!user?.uid) return;
 
       try {
-        const userCoursesIds: string[] = await getUserSubscriptions(user?.uid);
-        const coursesData: Course[] = await Promise.all(
-          Object.values(userCoursesIds).map(async (courseId) => {
-            const course = await getCourseById(courseId);
-            return course as Course;
+        const userCourses = await getUserSubscriptions(user?.uid);
+
+        if (!userCourses) return;
+
+        let coursesData = await Promise.all(
+          Object.keys(userCourses).map(async (courseId) => {
+            return await getCourseById(courseId);
           }),
         );
-        let filteredCoursesData = coursesData.filter((element) => element !== undefined);
-        filteredCoursesData = filteredCoursesData.map((course) => {
-          return { ...course, progress: Math.round(Math.random() * 100) };
+
+        coursesData = Object.values(coursesData).map((course) => {
+          const courseProgress =
+            Object.values(userCourses).find((userCourse) => userCourse._id === course._id)
+              ?.progress || 0;
+
+          const courseWorkouts = Object.keys(course.workouts).length;
+
+          return { ...course, progress: (courseProgress / courseWorkouts) * 100 };
         });
-        setCourses(filteredCoursesData);
-        console.log(filteredCoursesData)
+        setCourses(coursesData);
       } catch (error) {
-        console.error("Ошибка при получении курсов:", error);
+        console.error(error);
       }
     };
 
     fetchUserCourses();
-  }, [user]);
+  }, []);
 
-  // const handleOpenModal = async (workoutsIds: string[]) => {
-  //   try {
-  //     const workoutsData = await Promise.all(
-  //       workoutsIds.map(async (workoutId) => {
-  //         return await getWorkoutById(workoutId);
-  //       })
-  //     );
-
-  //     setSelectedWorkouts(workoutsData.filter(Boolean));
-  //     setIsModalOpen(true);
-  //   } catch (error) {
-  //     console.error("Ошибка при получении тренировок:", error);
-  //   }
-  // };
   const handleCloseModal = () => {
-    setModalChangePasswod(false)
-  }
+    setModalChangePasswod(false);
+  };
 
   if (!user?.uid) return navigate(ROUTES.main.generateUrl({}));
-
-  // console.log(courses);
-
   return (
     <ContentWrapper>
       <Header />
@@ -94,7 +90,9 @@ function Profile() {
               <p className="text-[18px]">Пароль: ******</p>
             </div>
             <div className="mt-auto">
-              <ButtonRegular className="min-w-[192px]" onClick={() => setModalChangePasswod(true)}>Изменить пароль</ButtonRegular>
+              <ButtonRegular className="min-w-[192px]" onClick={() => setModalChangePasswod(true)}>
+                Изменить пароль
+              </ButtonRegular>
               <ButtonTransparent
                 className="ml-[10px] min-w-[192px]"
                 onClick={() => {
@@ -110,13 +108,21 @@ function Profile() {
           <h2 className="text-[40px] font-semibold">Мои курсы</h2>
           <div className="mt-[50px] flex flex-wrap justify-start gap-[40px]">
             {courses.map((course, index) => (
-              <Card key={index} course={course} initialSubscribed={true} uid={user.uid} />
+              <Card
+                key={index}
+                course={course}
+                initialSubscribed={true}
+                uid={user.uid}
+                handleDisplayWorkouts={handleDisplayWorkouts}
+              />
             ))}
           </div>
         </div>
       </div>
-      <ModalChangePassword isOpen={isModalChangePasswordOpen} onClose={handleCloseModal}/>
-      {/* <ModalSelect isOpen={isModalOpen} onClose={handleCloseModal} workouts={selectedWorkouts} /> */}
+      <ModalChangePassword isOpen={isModalChangePasswordOpen} onClose={handleCloseModal} />
+      {displayModal === "workout" && selectedCourse && (
+        <ModalWorkoutSelect course={selectedCourse} setDisplayModal={setDisplayModal} />
+      )}
     </ContentWrapper>
   );
 }

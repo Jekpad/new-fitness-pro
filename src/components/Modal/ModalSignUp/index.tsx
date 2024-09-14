@@ -64,13 +64,11 @@ export default function ModalSignUp({ setDisplayModal }: Props) {
 
   return (
     <div
-      className="fixed left-0 top-0 right-0 bottom-0 z-50 flex h-[100%] min-h-[100vh] w-[100%] flex-col items-center justify-center bg-black bg-opacity-20"
-      onClick={() => setDisplayModal(null)}
-    >
+      className="fixed bottom-0 left-0 right-0 top-0 z-50 flex h-[100%] min-h-[100vh] w-[100%] flex-col items-center justify-center bg-black bg-opacity-20"
+      onMouseDown={() => setDisplayModal(null)}>
       <div
-        className="block w-[100%] max-w-[360px] rounded-blockRadiusMax border-solid border-zinc-300 bg-color-component-background p-10 rounded-[30px]"
-        onClick={(e) => e.stopPropagation()}
-      >
+        className="rounded-blockRadiusMax block w-[100%] max-w-[360px] rounded-[30px] border-solid border-zinc-300 bg-color-component-background p-10"
+        onMouseDown={(e) => e.stopPropagation()}>
         <div className="mb-12 flex items-center justify-center">
           <img src="/logo.png" alt="logo" />
         </div>
@@ -85,7 +83,7 @@ export default function ModalSignUp({ setDisplayModal }: Props) {
                 placeholder="Как к вам обращаться"
                 className={
                   errors.name?.message
-                    ? "w-full outline-none border-color-error"
+                    ? "w-full border-color-error outline-none"
                     : "w-full outline-none"
                 }
               />
@@ -100,7 +98,7 @@ export default function ModalSignUp({ setDisplayModal }: Props) {
                 placeholder="Email"
                 className={
                   errors.email?.message
-                    ? "w-full outline-none border-color-error"
+                    ? "w-full border-color-error outline-none"
                     : "w-full outline-none"
                 }
               />
@@ -115,7 +113,7 @@ export default function ModalSignUp({ setDisplayModal }: Props) {
                 placeholder="Пароль"
                 className={
                   errors.password?.message
-                    ? "w-full outline-none border-color-error"
+                    ? "w-full border-color-error outline-none"
                     : "w-full outline-none"
                 }
               />
@@ -129,7 +127,7 @@ export default function ModalSignUp({ setDisplayModal }: Props) {
                 autoComplete="new-password"
                 className={
                   errors.passwordRepeat?.message
-                    ? "w-full outline-none border-color-error"
+                    ? "w-full border-color-error outline-none"
                     : "w-full outline-none"
                 }
                 placeholder="Повторите пароль"

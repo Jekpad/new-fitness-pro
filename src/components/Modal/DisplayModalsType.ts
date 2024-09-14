@@ -1,1 +1,1 @@
-export type DisplayModalsType = "signin" | "signup" | "restore" | "userinfo" | null;
+export type DisplayModalsType = "signin" | "signup" | "restore" | "userinfo" | "workout" | null;

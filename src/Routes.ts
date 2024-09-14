@@ -21,7 +21,7 @@ export const ROUTES: RoutesType = {
   },
   workout: {
     name: "Workout",
-    path: "/workout/:id",
-    generateUrl: ({ id }) => `/workout/${id}`,
+    path: "course/:courseid/workout/:workoutid",
+    generateUrl: ({ courseid, workoutid }) => `/course/${courseid}/workout/${workoutid}`,
   },
 };
