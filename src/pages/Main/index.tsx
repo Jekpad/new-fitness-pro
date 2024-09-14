@@ -2,16 +2,19 @@ import Card from "@/components/Card";
 import ContentWrapper from "@/components/ContentWrapper";
 import Header from "@/components/Header/Header";
 import { useUserContext } from "@/contexts/userContext";
-import { Course } from "@/types/course";
-import { getCourses } from "@/utils/api";
+import { Course, UserCourse } from "@/types/course";
+import { getCourses, getUserSubscriptions } from "@/utils/api";
 import { useEffect, useState } from "react";
 
 function Main() {
   const { user } = useUserContext();
   const [courses, setCourses] = useState<Course[]>([]);
+  const [userCourses, setUserCourses] = useState<Record<string, UserCourse> | null>(null);
 
   useEffect(() => {
     const fetchCourses = async () => {
+      if (user?.uid) setUserCourses(await getUserSubscriptions(user?.uid));
+
       const coursesData = await getCourses();
       setCourses(coursesData);
     };
@@ -22,7 +25,7 @@ function Main() {
   const scrollToTop = () => {
     window.scrollTo({
       top: 0,
-      behavior: 'smooth',
+      behavior: "smooth",
     });
   };
 
@@ -31,22 +34,29 @@ function Main() {
       <Header />
       <div className="mt-[25px] flex flex-col items-center justify-center md:mt-[60px]">
         <div className="flex flex-col items-start justify-center gap-[10px] md:flex-row">
-          <h1 className="text-left text-3xl font-medium leading-[35px] md:text-left md:text-6xl md:leading-[60px] md:mb-[50px]">
+          <h1 className="text-left text-3xl font-medium leading-[35px] md:mb-[50px] md:text-left md:text-6xl md:leading-[60px]">
             Начните заниматься спортом и улучшите качество жизни
           </h1>
-          <div className="hidden gap-[10px] bg-[#BCEC30] px-[20px] py-[16px] text-[32px] font-normal leading-[35px] rounded-[5px] md:flex md:quote md:min-w-[288px]">
+          <div className="md:quote hidden gap-[10px] rounded-[5px] bg-[#BCEC30] px-[20px] py-[16px] text-[32px] font-normal leading-[35px] md:flex md:min-w-[288px]">
             Измени своё тело за полгода!
           </div>
         </div>
         <div className="mt-[50px] flex w-full flex-wrap justify-start gap-[24px] md:gap-[40px]">
-          {courses.map((course) => (
-            <Card key={course._id} course={course} uid={user?.uid} initialSubscribed={false} />
-          ))}
+          {courses.map((course) => {
+            const subscribed = !!userCourses?.[course._id];
+            return (
+              <Card
+                key={course._id}
+                course={course}
+                uid={user?.uid}
+                initialSubscribed={subscribed}
+              />
+            );
+          })}
         </div>
-        <div 
-          className="ml-auto mt-[20px] cursor-pointer rounded-[46px] bg-[#BCEC30] px-[26px] py-[16px] md:mt-[40px] md:mx-auto"
-          onClick={scrollToTop}
-        >
+        <div
+          className="ml-auto mt-[20px] cursor-pointer rounded-[46px] bg-[#BCEC30] px-[26px] py-[16px] md:mx-auto md:mt-[40px]"
+          onClick={scrollToTop}>
           Наверх ↑
         </div>
       </div>

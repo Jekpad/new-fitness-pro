@@ -16,12 +16,11 @@ const ModalUserInfo = ({ className, setDisplayModal }: Props) => {
 
   return (
     <div
-      className={`z-20 bg-color-component-background shadow-md rounded-[30px] p-[30px] w-[266px] flex flex-col gap-[10px] ${className}`}
-    >
+      className={`z-20 flex w-[266px] flex-col gap-[10px] rounded-[30px] bg-color-component-background p-[30px] shadow-md ${className}`}>
       <p className="text-lg leading-5">{user?.name}</p>
       <p className="text-lg leading-5 text-[#999]">{user?.email}</p>
       <Link className="mt-[22px]" to={ROUTES.profile.generateUrl({})}>
-        <ButtonRegular className=" w-full">Мой профиль</ButtonRegular>
+        <ButtonRegular className="w-full">Мой профиль</ButtonRegular>
       </Link>
       <ButtonTransparent
         className="w-full"
@@ -29,8 +28,8 @@ const ModalUserInfo = ({ className, setDisplayModal }: Props) => {
           setUser(null);
           auth.signOut();
           setDisplayModal(null);
-        }}
-      >
+          window.location.reload();
+        }}>
         Выйти
       </ButtonTransparent>
     </div>
