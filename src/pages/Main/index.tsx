@@ -29,12 +29,12 @@ function Main() {
   return (
     <ContentWrapper>
       <Header />
-      <div className="mt-[60px] flex flex-col items-center justify-center md:mt-[25px]">
+      <div className="mt-[25px] flex flex-col items-center justify-center md:mt-[60px]">
         <div className="flex flex-col items-start justify-center gap-[10px] md:flex-row">
           <h1 className="text-left text-3xl font-medium leading-[35px] md:text-left md:text-6xl md:leading-[60px]">
             Начните заниматься спортом и улучшите качество жизни
           </h1>
-          <div className="hidden gap-[10px] bg-[#BCEC30] px-[16px] py-[20px] text-[32px] font-normal leading-[35px] md:flex">
+          <div className="hidden gap-[10px] bg-[#BCEC30] px-[16px] py-[20px] text-[32px] font-normal leading-[35px] rounded-[5px] md:flex">
             Измени своё тело за полгода!
           </div>
         </div>

@@ -26,9 +26,15 @@ export default function Header() {
       </div>
 
       {!user?.uid && (
-        <ButtonRegular className="ml-auto" onClick={() => setDisplayModal("signin")}>
-          Войти
-        </ButtonRegular>
+       <ButtonRegular
+       className="ml-auto w-[83px] h-[36px] rounded-[46px] px-[16px] py-[8px] 
+                  md:w-auto md:h-auto md:rounded-full md:px-[26px] md:py-4 flex items-center justify-center"
+       onClick={() => setDisplayModal("signin")}
+     >
+       Войти
+     </ButtonRegular>
+     
+     
       )}
       {user?.uid && (
         <button
@@ -38,7 +44,7 @@ export default function Header() {
           }
         >
           <img src="/Profile.png" alt="Фото профиля" />
-          <p>{user.name}</p>
+          <p className="hidden md:block">{user.name}</p>
           <ArrowDown width={8} height={8} />
           {displayModal === "userinfo" && (
             <ModalUserInfo setDisplayModal={setDisplayModal} className="absolute top-14 right-0" />
