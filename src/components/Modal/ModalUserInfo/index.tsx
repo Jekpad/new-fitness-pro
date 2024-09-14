@@ -16,7 +16,7 @@ const ModalUserInfo = ({ className, setDisplayModal }: Props) => {
 
   return (
     <div
-      className={`bg-color-component-background shadow-md rounded-[30px] p-[30px] w-[266px] flex flex-col gap-[10px] ${className}`}
+      className={`z-20 bg-color-component-background shadow-md rounded-[30px] p-[30px] w-[266px] flex flex-col gap-[10px] ${className}`}
     >
       <p className="text-lg leading-5">{user?.name}</p>
       <p className="text-lg leading-5 text-[#999]">{user?.email}</p>

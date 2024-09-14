@@ -28,8 +28,8 @@ const ModalProgress = ({
       let workoutDone = true;
 
       const saveData = Object.entries(exercises).map(([key, exercise]) => {
-        const result = parseInt(data[key]);
-        workoutDone = exercise.quantity >= result ? false : workoutDone;
+        const result = parseInt(data[key] || "0");
+        workoutDone = exercise.quantity > result ? false : workoutDone;
         return result;
       });
 

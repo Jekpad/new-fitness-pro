@@ -74,7 +74,7 @@ function Workout() {
         <div className="mt-5 grid gap-6 md:grid-cols-3 md:gap-[60px]">
           {workout.exercises &&
             Object.entries(workout.exercises).map(([key, exercise]) => {
-              const exceciseQuantity = exercise.quantity;
+              const exceciseQuantity = exercise.quantity || 1;
               const userQuantity = userCourse.workouts?.[workoutid]?.exercises?.[key] || 0;
               return (
                 <ProgressBar

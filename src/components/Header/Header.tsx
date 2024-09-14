@@ -43,7 +43,7 @@ export default function Header() {
             displayModal !== "userinfo" ? setDisplayModal("userinfo") : setDisplayModal(null)
           }
         >
-          <img src="/Profile.png" alt="Фото профиля" />
+          <img src="/Profile.png" alt="Фото профиля" className="w-[30px] h-[30px] md:w-[42px] md:h-[42px]"/>
           <p className="hidden md:block">{user.name}</p>
           <ArrowDown width={8} height={8} />
           {displayModal === "userinfo" && (
