@@ -79,12 +79,12 @@ function Profile() {
       <Header />
       <div className="flex w-full flex-col">
         <div className="mt-[50px]">
-          <h2 className="text-start text-[40px] font-semibold">Профиль</h2>
+          <h2 className="text-start text-2xl md:text-[40px] font-semibold">Профиль</h2>
         </div>
         <div className="mt-4 flex flex-wrap justify-center gap-[33px] rounded-2xl bg-color-component-background p-10 shadow-lg md:justify-start">
           <img src="/ProfilePicture.png" className="h-[197px] w-[197px]" alt="Фото профиля" />
           <div className="flex flex-col gap-[30px]">
-            <p className="text-[32px]">{user?.name}</p>
+            <p className="md:text-[32px] text-2xl">{user?.name}</p>
             <div>
               <p className="text-[18px]">Логин: {user?.email}</p>
               <p className="text-[18px]">Пароль: ******</p>
@@ -107,7 +107,7 @@ function Profile() {
           </div>
         </div>
         <div className="mt-[60px]">
-          <h2 className="text-[40px] font-semibold">Мои курсы</h2>
+          <h2 className="md:text-[40px] text-2xl font-semibold">Мои курсы</h2>
           <div className="mt-[50px] flex flex-wrap justify-center gap-[40px] lg:justify-start">
             {courses.map((course, index) => (
               <Card

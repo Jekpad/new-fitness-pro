@@ -86,7 +86,7 @@ export default function Card({ uid, initialSubscribed, course, handleDisplayWork
         )}
       </div>
       <div className="flex flex-col gap-[20px] px-[30px] pb-[15px] pt-[24px]">
-        <h2 className="text-[32px] font-medium leading-[35px]">{course.nameRU}</h2>
+        <h2 className="md:text-[32px] text-2xl font-medium leading-[35px]">{course.nameRU}</h2>
         <div className="flex flex-wrap gap-[6px]">
           <div className="flex items-center justify-center gap-[6px] rounded-[50px] bg-[#F7F7F7] p-[10px]">
             <svg
