@@ -35,7 +35,7 @@ const ModalChangePassword: React.FC<ModalSelectProps> = ({ isOpen, onClose }) =>
   return (
     <div
       className="fixed left-0 top-0 right-0 bottom-0 z-50 flex h-[100%] min-h-[100vh] w-[100%] flex-col items-center justify-center bg-black bg-opacity-20"
-      onClick={onClose}
+      onClick={onClose} data-testid="modal"
     >
       <div
         className="block w-[100%] max-w-[360px] rounded-blockRadiusMax border-solid border-zinc-300 bg-color-component-background p-10 rounded-[30px]"

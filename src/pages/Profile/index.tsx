@@ -74,7 +74,7 @@ const Profile = () => {
               <p className="text-[18px]">Пароль: ******</p>
             </div>
             <div className="mt-auto">
-              <ButtonRegular className="min-w-[192px]" onClick={() => setModalChangePasswod(true)}>Изменить пароль</ButtonRegular>
+              <ButtonRegular className="min-w-[192px]" onClick={() => setModalChangePasswod(true)} data-testid="modalChangeButton">Изменить пароль</ButtonRegular>
               <ButtonTransparent
                 className="ml-[10px] min-w-[192px]"
                 onClick={() => {
@@ -90,12 +90,12 @@ const Profile = () => {
           <h2 className="text-[40px] font-semibold">Мои курсы</h2>
           <div className="mt-[50px] flex flex-wrap justify-start gap-[40px]">
             {courses.map((course, index) => (
-              <Card key={index} course={course} initialSubscribed={true} uid={user.uid} />
+              <Card key={index} course={course} initialSubscribed={true} uid={user?.uid} />
             ))}
           </div>
         </div>
       </div>
-      <ModalChangePassword isOpen={isModalChangePasswordOpen} onClose={handleCloseModal}/>
+      <ModalChangePassword  isOpen={isModalChangePasswordOpen} onClose={handleCloseModal}/>
     </ContentWrapper>
   );
 }
