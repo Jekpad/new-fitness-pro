@@ -86,17 +86,17 @@ function Profile() {
           <div className="flex flex-col gap-[30px]">
             <p className="md:text-[32px] text-2xl">{user?.name}</p>
             <div>
-              <p className="text-[18px]">Логин: {user?.email}</p>
-              <p className="text-[18px]">Пароль: ******</p>
+              <p className="text-base md:text-[18px]">Логин: {user?.email}</p>
+              <p className="text-base md:text-[18px]">Пароль: ******</p>
             </div>
             <div className="mt-auto flex flex-wrap gap-[10px]">
               <ButtonRegular
-                className="w-full min-w-[192px] md:w-auto"
+                className="w-full min-w-[192px] md:w-auto text-base md:text-lg"
                 onClick={() => setModalChangePasswod(true)}>
                 Изменить пароль
               </ButtonRegular>
               <ButtonTransparent
-                className="w-full min-w-[192px] md:w-auto"
+                className="w-full min-w-[192px] md:w-auto text-base md:text-lg"
                 onClick={() => {
                   setUser(null);
                   auth.signOut();
