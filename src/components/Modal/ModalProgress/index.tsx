@@ -3,11 +3,12 @@ import { Exercise } from "@/types/exercise";
 import InputRegular from "@/components/UI/Inputs/InputRegular";
 import { useForm } from "react-hook-form";
 import { setProgress } from "@/utils/api";
+import { DisplayModalsType } from "../DisplayModalsType";
 
 type Props = {
   courseid: string;
   workoutid: string;
-  setIsPopUpDisplay: Dispatch<SetStateAction<boolean>>;
+  setIsPopUpDisplay: Dispatch<SetStateAction<DisplayModalsType>>;
   exercises: Exercise[];
   userExercises?: Record<string, number>;
 };
@@ -28,13 +29,16 @@ const ModalProgress = ({
       let workoutDone = true;
 
       const saveData = Object.entries(exercises).map(([key, exercise]) => {
-        const result = parseInt(data[key]);
-        workoutDone = exercise.quantity >= result ? false : workoutDone;
+        const result = parseInt(data[key] || "0");
+        workoutDone = exercise.quantity > result ? false : workoutDone;
         return result;
       });
 
       await setProgress(courseid, workoutid, workoutDone, saveData);
-      window.location.reload();
+      setTimeout(() => {
+        window.location.reload();
+      }, 1500);
+      setIsPopUpDisplay("workoutsuccess");
     } catch (error) {
       console.error(error);
     }
@@ -42,7 +46,7 @@ const ModalProgress = ({
 
   return (
     <div
-      onMouseDown={() => setIsPopUpDisplay(false)}
+      onMouseDown={() => setIsPopUpDisplay(null)}
       className="fixed bottom-0 left-0 right-0 top-0 z-50 flex max-h-full w-full items-center justify-center overflow-y-auto overflow-x-hidden bg-black bg-opacity-20 md:inset-0">
       <form
         onMouseDown={(e) => e.stopPropagation()}

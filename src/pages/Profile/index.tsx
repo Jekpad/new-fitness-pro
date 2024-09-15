@@ -1,14 +1,6 @@
 import { useEffect, useState } from "react";
-// import CourseItem from "@/components/CourseItem";
 import Header from "@/components/Header/Header";
-// import ModalSelect from "@/components/Modal/ModalSelect";
 import ContentWrapper from "@/components/ContentWrapper";
-// import {
-//   getCourseById,
-//   getUserSubscriptions,
-//   getWorkoutById,
-//   unsubscribeFromCourse,
-// } from "@/utils/api";
 import { useUserContext } from "@/contexts/userContext";
 import ButtonRegular from "@/components/UI/Buttons/ButtonRegular";
 import ButtonTransparent from "@/components/UI/Buttons/ButtonTransparent";
@@ -79,22 +71,24 @@ function Profile() {
       <Header />
       <div className="flex w-full flex-col">
         <div className="mt-[50px]">
-          <h2 className="text-start text-[40px] font-semibold">Профиль</h2>
+          <h2 className="text-start text-2xl font-semibold md:text-[40px]">Профиль</h2>
         </div>
-        <div className="mt-4 flex gap-[33px] rounded-2xl bg-color-component-background p-10 shadow-lg">
-          <img src="/ProfilePicture.png" alt="Картинка" width={197} height={197} />
+        <div className="mt-4 flex flex-wrap justify-center gap-[33px] rounded-2xl bg-color-component-background p-10 shadow-lg md:justify-start">
+          <img src="/ProfilePicture.png" className="h-[197px] w-[197px]" alt="Фото профиля" />
           <div className="flex flex-col gap-[30px]">
-            <p className="text-[32px]">{user?.name}</p>
+            <p className="text-2xl md:text-[32px]">{user?.name}</p>
             <div>
-              <p className="text-[18px]">Логин: {user?.email}</p>
-              <p className="text-[18px]">Пароль: ******</p>
+              <p className="text-base md:text-[18px]">Логин: {user?.email}</p>
+              <p className="text-base md:text-[18px]">Пароль: ******</p>
             </div>
-            <div className="mt-auto">
-              <ButtonRegular className="min-w-[192px]" onClick={() => setModalChangePasswod(true)}>
+            <div className="mt-auto flex flex-wrap gap-[10px]">
+              <ButtonRegular
+                className="w-full min-w-[192px] text-base md:w-auto md:text-lg"
+                onClick={() => setModalChangePasswod(true)}>
                 Изменить пароль
               </ButtonRegular>
               <ButtonTransparent
-                className="ml-[10px] min-w-[192px]"
+                className="w-full min-w-[192px] text-base md:w-auto md:text-lg"
                 onClick={() => {
                   setUser(null);
                   auth.signOut();
@@ -105,8 +99,8 @@ function Profile() {
           </div>
         </div>
         <div className="mt-[60px]">
-          <h2 className="text-[40px] font-semibold">Мои курсы</h2>
-          <div className="mt-[50px] flex flex-wrap justify-start gap-[40px]">
+          <h2 className="text-2xl font-semibold md:text-[40px]">Мои курсы</h2>
+          <div className="mt-[50px] flex flex-wrap justify-center gap-[40px] lg:justify-start">
             {courses.map((course, index) => (
               <Card
                 key={index}

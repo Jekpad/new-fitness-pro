@@ -18,7 +18,7 @@ type CardProps = {
   uid?: string;
   initialSubscribed: boolean;
   course: Course;
-  handleDisplayWorkouts: (course: Course) => void;
+  handleDisplayWorkouts?: (course: Course) => void;
 };
 
 export default function Card({ uid, initialSubscribed, course, handleDisplayWorkouts }: CardProps) {
@@ -54,7 +54,6 @@ export default function Card({ uid, initialSubscribed, course, handleDisplayWork
       return console.error("Ошибка при отписке от курса:", error);
     }
   };
-  // console.log(course)
 
   return (
     <div
@@ -62,17 +61,13 @@ export default function Card({ uid, initialSubscribed, course, handleDisplayWork
         if (subscribed) return;
         navigate(ROUTES.course.generateUrl({ id: course._id }));
       }}
-      className="flex w-[360px] flex-col items-start justify-center gap-[24px] rounded-[30px] shadow-lg">
-      <div className="relative flex w-[360px] flex-row">
-        <img
-          alt={course.nameRU}
-          className="h-[325px] w-[360px] rounded-[30px]"
-          src={course.image}
-        />
+      className="flex w-full max-w-[343px] flex-col items-start justify-center gap-[24px] rounded-[30px] shadow-lg md:w-[360px]">
+      <div className="relative flex w-full flex-row">
+        <img alt={course.nameRU} className="h-[325px] w-full rounded-[30px]" src={course.image} />
         {!subscribed && (
           <div className="group absolute right-5 top-5 z-10 cursor-pointer">
             <CourseAdd onClick={handleSubscribe} />
-            <span className="absolute left-6 top-6 hidden whitespace-nowrap rounded border-[1px] border-black bg-color-background px-2 py-1 text-sm group-hover:inline-block">
+            <span className="absolute right-6 top-6 hidden whitespace-nowrap rounded border-[1px] border-black bg-color-background px-2 py-1 text-sm group-hover:inline-block md:left-6 md:right-auto">
               Добавить курс
             </span>
           </div>
@@ -80,14 +75,14 @@ export default function Card({ uid, initialSubscribed, course, handleDisplayWork
         {subscribed && (
           <div className="group absolute right-5 top-5 z-10 cursor-pointer">
             <CourseRemove onClick={handleUnsubscribe} />
-            <span className="absolute left-6 top-6 hidden whitespace-nowrap rounded border-[1px] border-black bg-color-background px-2 py-1 text-sm group-hover:inline-block">
+            <span className="absolute right-6 top-6 hidden whitespace-nowrap rounded border-[1px] border-black bg-color-background px-2 py-1 text-sm group-hover:inline-block md:left-6 md:right-auto">
               Удалить курс
             </span>
           </div>
         )}
       </div>
       <div className="flex flex-col gap-[20px] px-[30px] pb-[15px] pt-[24px]">
-        <h2 className="text-[32px] font-medium leading-[35px]">{course.nameRU}</h2>
+        <h2 className="text-2xl font-medium leading-[35px] md:text-[32px]">{course.nameRU}</h2>
         <div className="flex flex-wrap gap-[6px]">
           <div className="flex items-center justify-center gap-[6px] rounded-[50px] bg-[#F7F7F7] p-[10px]">
             <svg
@@ -134,7 +129,7 @@ export default function Card({ uid, initialSubscribed, course, handleDisplayWork
             Сложность {course.difficulty}
           </div>
         </div>
-        {subscribed && course.progress !== undefined && (
+        {subscribed && course.progress !== undefined && handleDisplayWorkouts && (
           <>
             <ProgressBar text="Прогресс" progress={course.progress} />
             <ButtonRegular onClick={() => handleDisplayWorkouts(course)}>

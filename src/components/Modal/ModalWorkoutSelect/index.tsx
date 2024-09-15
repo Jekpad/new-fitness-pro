@@ -48,17 +48,18 @@ const ModalWorkoutSelect = ({ course, setDisplayModal }: Props) => {
         <p className="text-center text-lg font-medium">Выберите тренировку</p>
         <div className="custom-scroll flex h-[300px] flex-col gap-[10px] overflow-y-scroll pr-5">
           {workouts?.map((workout, index) => (
-            <>
+            <div key={index}>
               <Link
                 to={ROUTES.workout.generateUrl({ courseid: course._id, workoutid: workout._id })}
-                key={index}
                 className="flex items-center gap-[10px] bg-opacity-25 py-[2px] hover:bg-color-inactive">
-                {userWorkouts?.[workout._id]?.done ? <CheckCircleDone /> : <CheckCircle />}
+                 <div className="w-[23px]">
+                  {userWorkouts?.[workout._id]?.done ? <CheckCircleDone /> : <CheckCircle />}
+                </div>
 
                 <p className="font-medium">{workout.name}</p>
               </Link>
               <hr className="mb-2 h-[2px] w-full bg-[#C4C4C4]"></hr>
-            </>
+            </div>
           ))}
         </div>
       </div>

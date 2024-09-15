@@ -6,6 +6,7 @@ type Props = {
 const ProgressBar = ({ text, progress }: Props) => {
   let displayProgress = progress < 0 ? 0 : progress;
   displayProgress = progress > 100 ? 100 : displayProgress;
+  displayProgress = Math.round(displayProgress);
   return (
     <div>
       <div className="mb-1 flex justify-between gap-[2px]">
