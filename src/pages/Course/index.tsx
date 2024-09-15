@@ -65,7 +65,7 @@ const Course = () => {
   if (!courseData) return <LoadingPlaceholder />;
 
   return (
-    <ContentWrapper className="w-full overflow-y-hidden">
+    <ContentWrapper className="overflow-x-hidden">
       <Header />
       <div
         className={`mt-[60px] flex h-[389px] w-full flex-row justify-center rounded-[20px] px-0 pt-16 lg:h-[310px] lg:justify-between lg:px-10 lg:pt-0`}
@@ -83,13 +83,13 @@ const Course = () => {
       </div>
 
       <section className="mt-10 lg:mt-[60px]">
-        <p className="text-2xl font-bold lg:text-4xl">Подойдет для вас, если:</p>
-        <div className="mt-6 grid grid-cols-1 gap-4 lg:mt-10 xl:grid-cols-3">
+        <p className="text-2xl font-semibold lg:text-[40px]">Подойдет для вас, если:</p>
+        <div className="mt-6 grid grid-cols-1 gap-4 xl:mt-10 xl:grid-cols-3">
           {courseData.fitting &&
             Object.values(courseData.fitting).map((fit, index) => (
               <div
                 key={index}
-                className="flex w-full min-w-[326px] flex-row items-center justify-start rounded-[20px] bg-black p-[17px]">
+                className="flex w-full min-w-[326px] flex-row items-center justify-start rounded-[20px] bg-color-active p-5 md:p-[17px]">
                 <div className="flex items-center pr-[25px] text-7xl text-[#BCEC30]">
                   {index + 1}
                 </div>
@@ -100,8 +100,8 @@ const Course = () => {
       </section>
 
       <section className="mt-10 lg:mt-[60px]">
-        <h1 className="text-2xl font-bold lg:text-4xl">Направления</h1>
-        <div className="mt-6 grid w-full grid-cols-1 gap-y-6 rounded-[20px] bg-color-acсent p-[30px] lg:grid-cols-2 xl:grid-cols-3">
+        <p className="text-2xl font-semibold lg:text-[40px]">Направления</p>
+        <div className="mt-6 grid w-full grid-cols-1 gap-y-6 rounded-[20px] bg-color-acсent p-[30px] lg:grid-cols-2 xl:mt-10 xl:grid-cols-3">
           {courseData.directions &&
             Object.values(courseData.directions).map((direction, index) => (
               <div key={index} className="flex flex-nowrap">
@@ -113,8 +113,8 @@ const Course = () => {
       </section>
 
       <div className="flex-column relative mt-[102px] flex w-full flex-wrap-reverse rounded-[20px] bg-color-component-background shadow-xl lg:flex-nowrap lg:justify-between 2xl:h-[486px]">
-        <div className="z-[1] w-full rounded-[20px] bg-color-component-background p-[28px]">
-          <h1 className="text-[32px] font-semibold lg:text-5xl">
+        <div className="z-[1] w-full rounded-[20px] bg-color-component-background p-[28px] lg:w-auto">
+          <h1 className="lg:lette text-[32px] font-semibold lg:text-[60px] lg:leading-none">
             Начните путь <br />к новому телу
           </h1>
           <ul className="mt-[28px] w-[437px] list-disc pl-[28px] text-[18px] opacity-50 lg:text-[24px]">
@@ -124,29 +124,28 @@ const Course = () => {
             <li>упражнения заряжают бодростью</li>
             <li>помогают противостоять стрессам</li>
           </ul>
-          <div className="mt-[28px] cursor-pointer">
-            {!user?.uid && (
-              <ButtonRegular className="w-full lg:max-w-80" onClick={auth}>
-                Войдите, чтобы добавить курс
-              </ButtonRegular>
-            )}
-            {user?.uid && !courseSubscribed && (
-              <ButtonRegular className="w-full lg:max-w-80" onClick={subscribeCourse}>
-                Добавить курс
-              </ButtonRegular>
-            )}
-            {user?.uid && courseSubscribed && (
-              <ButtonRegular className="w-full lg:max-w-80">
-                Вы успешно подписались на курс
-              </ButtonRegular>
-            )}
-          </div>
+
+          {!user?.uid && (
+            <ButtonRegular className="mt-[28px] w-full text-[18px]" onClick={auth}>
+              Войдите, чтобы добавить курс
+            </ButtonRegular>
+          )}
+          {user?.uid && !courseSubscribed && (
+            <ButtonRegular className="mt-[28px] w-full text-[18px]" onClick={subscribeCourse}>
+              Добавить курс
+            </ButtonRegular>
+          )}
+          {user?.uid && courseSubscribed && (
+            <ButtonRegular className="mt-[28px] w-full text-[18px]">
+              Вы успешно подписались на курс
+            </ButtonRegular>
+          )}
         </div>
 
-        <div className="absolute -right-24 -top-52 z-0 lg:relative lg:right-0 lg:top-0">
-          <div className="relative h-full min-h-[400px] w-[400px] overflow-hidden 2xl:w-[660px]">
+        <div className="absolute -right-24 -top-72 z-0 sm:right-2 lg:relative lg:right-0 lg:top-0">
+          <div className="relative h-full min-h-[400px] w-svw sm:w-[340px] sm:overflow-hidden lg:w-[450px] 2xl:w-[660px]">
             <img
-              className="absolute bottom-0 right-[10px] rotate-[355deg]"
+              className="absolute -bottom-32 right-20 rotate-[355deg] sm:bottom-0 sm:right-[10px]"
               alt=""
               src="/green_line.png"
               width="670"
@@ -155,14 +154,15 @@ const Course = () => {
           </div>
 
           <img
-            className="absolute bottom-5 right-2"
+            className="absolute bottom-5 right-2 w-[300px] sm:w-auto"
             alt=""
             src="/running_man.png"
             width="519"
             height="539"
           />
+
           <img
-            className="2:right-96 absolute right-[300px] top-8 lg:top-16 2xl:right-[380px] 2xl:top-5"
+            className="right-[300px] top-8 hidden sm:absolute lg:top-16 xl:right-96 2xl:right-[380px] 2xl:top-5"
             alt=""
             src="/black_line.png"
             width="50"
@@ -170,70 +170,6 @@ const Course = () => {
           />
         </div>
       </div>
-
-      {/*
-      <div className="relative mt-[0] flex h-[486px] w-full flex-col rounded-[20px] bg-color-component-background shadow-xl lg:mt-[102px] lg:flex-row lg:justify-between">
-        <div className="relative left-9 order-1 h-full w-[475px] lg:left-0 lg:order-2 lg:w-[660px]">
-          <div className="relative h-full w-full overflow-hidden">
-            <img
-              className="absolute right-[10px] rotate-[355deg] pt-[100px]"
-              alt="green line"
-              src="/green_line.png"
-              width="670"
-              height="390"
-            />
-          </div>
-          <img
-            className="absolute bottom-[80px] right-[20px] lg:bottom-5 lg:right-2"
-            alt="running man"
-            src="/running_man.png"
-            md-width="519"
-            width="334"
-            height="539"
-          />
-          <img
-            className="absolute right-[340px] top-[0] lg:right-96 lg:top-5"
-            alt="black line"
-            src="/black_line.png"
-            width="50"
-            height="42"
-          />
-        </div>
-        <div className="absolute left-10 top-10 z-10 order-2 lg:static lg:left-0 lg:top-0 lg:z-auto lg:order-1">
-          <div className="h-[406px] w-[437px] bg-white px-[28px] py-[28px]">
-            <h1 className="h-[120px] w-[398px] text-[32px] font-semibold lg:text-5xl">
-              Начните путь <br />к новому телу
-            </h1>
-            <div>
-              <ul className="h-[178px] w-[437px] list-disc pb-[28px] pl-[28px] text-lg leading-loose lg:text-2xl">
-                <li>проработка всех групп мышц</li>
-                <li>тренировка суставов</li>
-                <li>улучшение циркуляции крови</li>
-                <li>упражнения заряжают бодростью</li>
-                <li>помогают противостоять стрессам</li>
-              </ul>
-            </div>
-          </div>
-          <div className="cursor-pointer pl-[24px] lg:pl-[28px]">
-            {!user?.uid && (
-              <ButtonRegular className="w-[283px] lg:w-full" onClick={auth}>
-                Войдите, чтобы добавить курс
-              </ButtonRegular>
-            )}
-            {user?.uid && !courseSubscribed && (
-              <ButtonRegular className="w-[283px] lg:w-full" onClick={subscribeCourse}>
-                Добавить курс
-              </ButtonRegular>
-            )}
-            {user?.uid && courseSubscribed && (
-              <ButtonRegular className="w-[283px] lg:w-full">
-                Вы успешно подписались на курс
-              </ButtonRegular>
-            )}
-          </div>
-        </div>
-      </div>
-      */}
 
       {displayModal === "signin" && <ModalSignIn setDisplayModal={setDisplayModal} />}
       {displayModal === "signup" && <ModalSignUp setDisplayModal={setDisplayModal} />}
