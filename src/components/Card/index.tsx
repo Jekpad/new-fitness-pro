@@ -71,7 +71,7 @@ export default function Card({ uid, initialSubscribed, course, handleDisplayWork
         {!subscribed && (
           <div className="group absolute right-5 top-5 z-10 cursor-pointer">
             <CourseAdd onClick={handleSubscribe} />
-            <span className="absolute left-6 top-6 hidden whitespace-nowrap rounded border-[1px] border-black bg-color-background px-2 py-1 text-sm group-hover:inline-block">
+            <span className="absolute right-6 top-6 hidden whitespace-nowrap rounded border-[1px] border-black bg-color-background px-2 py-1 text-sm group-hover:inline-block md:left-6 md:right-auto">
               Добавить курс
             </span>
           </div>
@@ -79,7 +79,7 @@ export default function Card({ uid, initialSubscribed, course, handleDisplayWork
         {subscribed && (
           <div className="group absolute right-5 top-5 z-10 cursor-pointer">
             <CourseRemove onClick={handleUnsubscribe} />
-            <span className="absolute left-6 top-6 hidden whitespace-nowrap rounded border-[1px] border-black bg-color-background px-2 py-1 text-sm group-hover:inline-block">
+            <span className="absolute right-6 top-6 hidden whitespace-nowrap rounded border-[1px] border-black bg-color-background px-2 py-1 text-sm group-hover:inline-block md:left-6 md:right-auto">
               Удалить курс
             </span>
           </div>

@@ -20,7 +20,7 @@ function Main() {
     };
 
     fetchCourses();
-  }, []);
+  }, [user?.uid]);
 
   const scrollToTop = () => {
     window.scrollTo({
