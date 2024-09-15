@@ -34,14 +34,14 @@ function Main() {
       <Header />
       <div className="mt-[25px] flex flex-col items-center justify-center md:mt-[60px]">
         <div className="flex flex-col items-start justify-center gap-[10px] md:flex-row">
-          <h1 className="text-left text-3xl font-medium leading-[35px] md:mb-[50px] md:text-left md:text-6xl md:leading-[60px]">
+          <h1 className="text-left text-[32px] font-medium leading-[35px] md:mb-[50px] md:text-left md:text-6xl md:leading-[60px]">
             Начните заниматься спортом и улучшите качество жизни
           </h1>
-          <div className="md:quote hidden gap-[10px] rounded-[5px] bg-[#BCEC30] px-[20px] py-[16px] text-[32px] font-normal leading-[35px] md:flex md:min-w-[288px]">
+          <div className="quote hidden gap-[10px] rounded-[5px] bg-[#BCEC30] px-[20px] py-[16px] text-[32px] font-normal leading-[35px] md:min-w-[288px] lg:flex">
             Измени своё тело за полгода!
           </div>
         </div>
-        <div className="mt-[50px] flex w-full flex-wrap justify-start gap-[24px] md:gap-[40px]">
+        <div className="mt-[50px] flex w-full flex-wrap justify-center gap-[24px] lg:justify-start lg:gap-[40px]">
           {courses.map((course) => {
             const subscribed = !!userCourses?.[course._id];
             return (
