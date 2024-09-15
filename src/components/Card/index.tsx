@@ -18,9 +18,10 @@ type CardProps = {
   uid?: string;
   initialSubscribed: boolean;
   course: Course;
+  handleDisplayWorkouts: (course: Course) => void;
 };
 
-export default function Card({ uid, initialSubscribed, course }: CardProps) {
+export default function Card({ uid, initialSubscribed, course, handleDisplayWorkouts }: CardProps) {
   const navigate = useNavigate();
 
   const [subscribed, setSubscribed] = useState(initialSubscribed);
@@ -32,11 +33,11 @@ export default function Card({ uid, initialSubscribed, course }: CardProps) {
 
     try {
       await subscribeToCourse(uid, course._id);
-      alert(`Вы успешно подписались на курс ${course.nameRU}`);
       setSubscribed(true);
+      alert(`Вы успешно подписались на курс ${course.nameRU}`);
     } catch (error) {
       console.error("Ошибка при подписке на курс:", error);
-      alert("Произошла ошибка при подписке на курс");
+      return alert("Произошла ошибка при подписке на курс");
     }
   };
 
@@ -50,7 +51,7 @@ export default function Card({ uid, initialSubscribed, course }: CardProps) {
       alert(`Вы успешно отписались с курса ${course.nameRU}`);
       if (uid) return window.location.reload();
     } catch (error) {
-      console.error("Ошибка при отписке от курса:", error);
+      return console.error("Ошибка при отписке от курса:", error);
     }
   };
   // console.log(course)
@@ -133,12 +134,10 @@ export default function Card({ uid, initialSubscribed, course }: CardProps) {
             Сложность {course.difficulty}
           </div>
         </div>
-        {subscribed && course.progress && (
+        {subscribed && course.progress !== undefined && (
           <>
             <ProgressBar text="Прогресс" progress={course.progress} />
-            <ButtonRegular onClick={() => {
-                        navigate(ROUTES.workout.generateUrl({ id: course._id }));
-                      }}>
+            <ButtonRegular onClick={() => handleDisplayWorkouts(course)}>
               {course.progress == 0 && "Начать тренировки"}
               {course.progress > 0 && course.progress < 100 && "Продолжить"}
               {course.progress == 100 && "Начать заново"}
