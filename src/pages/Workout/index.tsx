@@ -12,12 +12,16 @@ import ProgressBar from "@/components/ProgressBar";
 import ButtonRegular from "@/components/UI/Buttons/ButtonRegular";
 import { useUserContext } from "@/contexts/userContext";
 import LoadingPlaceholder from "@/components/LoadingPlaceholder";
+import { DisplayModalsType } from "@/components/Modal/DisplayModalsType";
+import ModalProgressSuccess from "@/components/Modal/ModalProgressSuccess";
 
 function Workout() {
   const { user } = useUserContext();
   const { courseid, workoutid } = useParams();
 
-  const [isPopUpDisplay, setIsPopUpDisplay] = useState<boolean>(false);
+  // const [isPopUpDisplay, setIsPopUpDisplay] = useState<boolean>(false);
+  const [displayModal, setDisplayModal] = useState<DisplayModalsType>(null);
+
   const [course, setCourse] = useState<Course | undefined>();
   const [workout, setWorkout] = useState<WorkoutType.Workout | undefined>();
   const [userCourse, setUserCourse] = useState<UserCourse | undefined>();
@@ -45,10 +49,6 @@ function Workout() {
 
     getData();
   }, []);
-
-  const showPopUp = () => {
-    setIsPopUpDisplay(true);
-  };
 
   if (!workoutid || !courseid || !course || !workout || !userCourse) return <LoadingPlaceholder />;
 
@@ -86,8 +86,12 @@ function Workout() {
             })}
         </div>
         {workout.exercises && (
-          <ButtonRegular className="mt-10 w-full md:w-auto md:text-xl" onClick={showPopUp}>
-            Заполнить свой прогресс
+          <ButtonRegular
+            className="mt-10 w-full md:w-auto md:text-xl"
+            onClick={() => setDisplayModal("workoutprogress")}>
+            {userCourse?.workouts?.[workoutid]
+              ? "Обновить свой прогресс"
+              : "Заполнить свой прогресс"}
           </ButtonRegular>
         )}
         {!workout.exercises && (
@@ -102,15 +106,16 @@ function Workout() {
         )}
       </section>
 
-      {isPopUpDisplay && workout.exercises && (
+      {displayModal === "workoutprogress" && workout.exercises && (
         <ModalProgress
           courseid={userCourse._id}
           workoutid={workout._id}
-          setIsPopUpDisplay={setIsPopUpDisplay}
+          setIsPopUpDisplay={setDisplayModal}
           exercises={workout.exercises}
           userExercises={userCourse.workouts?.[workoutid]?.exercises}
         />
       )}
+      {displayModal === "workoutsuccess" && <ModalProgressSuccess />}
     </ContentWrapper>
   );
 }

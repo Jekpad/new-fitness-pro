@@ -18,7 +18,7 @@ type CardProps = {
   uid?: string;
   initialSubscribed: boolean;
   course: Course;
-  handleDisplayWorkouts: (course: Course) => void;
+  handleDisplayWorkouts?: (course: Course) => void;
 };
 
 export default function Card({ uid, initialSubscribed, course, handleDisplayWorkouts }: CardProps) {
@@ -61,13 +61,9 @@ export default function Card({ uid, initialSubscribed, course, handleDisplayWork
         if (subscribed) return;
         navigate(ROUTES.course.generateUrl({ id: course._id }));
       }}
-      className="flex flex-col items-start justify-center gap-[24px] rounded-[30px] shadow-lg w-full max-w-[343px] md:w-[360px]">
-      <div className="relative flex flex-row w-full">
-        <img
-          alt={course.nameRU}
-          className="h-[325px] w-full rounded-[30px]"
-          src={course.image}
-        />
+      className="flex w-full max-w-[343px] flex-col items-start justify-center gap-[24px] rounded-[30px] shadow-lg md:w-[360px]">
+      <div className="relative flex w-full flex-row">
+        <img alt={course.nameRU} className="h-[325px] w-full rounded-[30px]" src={course.image} />
         {!subscribed && (
           <div className="group absolute right-5 top-5 z-10 cursor-pointer">
             <CourseAdd onClick={handleSubscribe} />
@@ -86,7 +82,7 @@ export default function Card({ uid, initialSubscribed, course, handleDisplayWork
         )}
       </div>
       <div className="flex flex-col gap-[20px] px-[30px] pb-[15px] pt-[24px]">
-        <h2 className="md:text-[32px] text-2xl font-medium leading-[35px]">{course.nameRU}</h2>
+        <h2 className="text-2xl font-medium leading-[35px] md:text-[32px]">{course.nameRU}</h2>
         <div className="flex flex-wrap gap-[6px]">
           <div className="flex items-center justify-center gap-[6px] rounded-[50px] bg-[#F7F7F7] p-[10px]">
             <svg
@@ -133,7 +129,7 @@ export default function Card({ uid, initialSubscribed, course, handleDisplayWork
             Сложность {course.difficulty}
           </div>
         </div>
-        {subscribed && course.progress !== undefined && (
+        {subscribed && course.progress !== undefined && handleDisplayWorkouts && (
           <>
             <ProgressBar text="Прогресс" progress={course.progress} />
             <ButtonRegular onClick={() => handleDisplayWorkouts(course)}>
