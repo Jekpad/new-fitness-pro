@@ -37,7 +37,7 @@ const ModalProgress = ({
       await setProgress(courseid, workoutid, workoutDone, saveData);
       setTimeout(() => {
         window.location.reload();
-      }, 150000);
+      }, 1500);
       setIsPopUpDisplay("workoutsuccess");
     } catch (error) {
       console.error(error);
