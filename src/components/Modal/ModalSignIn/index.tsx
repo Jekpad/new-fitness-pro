@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { getUser } from "@/utils/api";
+import { getUser, resetPassword } from "@/utils/api";
 import { useUserContext } from "@/contexts/userContext";
 import { FirebaseError } from "firebase/app";
 
@@ -45,6 +45,7 @@ export default function ModalSignIn({ setDisplayModal }: Props) {
   const [restorePassword, setRestorePassword] = useState({ message: false, displayModal: false });
 
   function handleRecoverPassword() {
+    resetPassword(getValues().email);
     setRestorePassword((previous) => ({ ...previous, displayModal: true }));
     setTimeout(() => setRestorePassword({ message: false, displayModal: false }), 5000);
   }
