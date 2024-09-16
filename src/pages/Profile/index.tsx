@@ -12,6 +12,7 @@ import ModalWorkoutSelect from "@/components/Modal/ModalWorkoutSelect";
 import ModalChangePassword from "@/components/Modal/isModalChangePassword";
 import { ROUTES } from "@/Routes";
 import { getCourseById, getUserSubscriptions } from "@/utils/api";
+import { Course } from "@/types/course";
 
 const Profile = () => {
   const navigate = useNavigate();
@@ -88,9 +89,7 @@ const Profile = () => {
             </div>
             <div className="mt-auto flex flex-wrap gap-[10px]">
               <ButtonRegular
-               
                 className="w-full min-w-[192px] text-base md:w-auto md:text-lg"
-               
                 onClick={() => setModalChangePasswod(true)}
                 data-testid="modalChangeButton">
                 Изменить пароль
