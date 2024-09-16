@@ -21,11 +21,10 @@
     "noFallthroughCasesInSwitch": true,
 
     "paths": {
-      "@/*": ["./src/*"],
-      "@components/*": ["./src/components/*"],
-      "@pages/": ["./src/pages/*"],
-      "@utils/*": ["./src/utils/*"]
-    }
+      "@/*": ["./src/*"]
+    },
+
+    "types": ["vite-plugin-svgr/client"]
   },
-  "include": ["src"]
+  "include": ["src", "firebase.ts"]
 }

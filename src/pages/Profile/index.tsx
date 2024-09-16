@@ -1,93 +1,131 @@
-import { useState } from "react";
-import CourseItem from "@/components/CourseItem";
+import { auth } from "@/firebase";
+import { useEffect, useState } from "react";
 import Header from "@/components/Header/Header";
-import ModalSelect from "@/components/Modal/ModalSelect";
 import ContentWrapper from "@/components/ContentWrapper";
+import { useUserContext } from "@/contexts/userContext";
+import ButtonRegular from "@/components/UI/Buttons/ButtonRegular";
+import ButtonTransparent from "@/components/UI/Buttons/ButtonTransparent";
+import { useNavigate } from "react-router-dom";
+import Card from "@/components/Card";
+import { DisplayModalsType } from "@/components/Modal/DisplayModalsType";
+import ModalWorkoutSelect from "@/components/Modal/ModalWorkoutSelect";
+import ModalChangePassword from "@/components/Modal/isModalChangePassword";
+import { ROUTES } from "@/Routes";
+import { getCourseById, getUserSubscriptions } from "@/utils/api";
+import { Course } from "@/types/course";
 
-function Profile() {
-  const courses = [
-    {
-      name: "Йога",
-      length: 25,
-      time: "20-50 мин/день",
-      progress: 40,
-      difficulty: "3",
-    },
-    {
-      name: "Стретчинг",
-      length: 25,
-      time: "20-50 мин/день",
-      progress: 0,
-      difficulty: "3",
-    },
-    {
-      name: "Зумба",
-      length: 25,
-      time: "20-50 мин/день",
-      progress: 100,
-      difficulty: "3",
-    },
-  ];
-  const status = (progress: number) => {
-    if (progress > 0 && progress < 100) {
-      return "Продолжить";
-    } else if (progress == 100) {
-      return "Начать заново";
-    } else {
-      return "Начать тренировки";
-    }
+const Profile = () => {
+  const navigate = useNavigate();
+
+  const { user, setUser } = useUserContext();
+  const [courses, setCourses] = useState<Course[]>([]);
+  const [isModalChangePasswordOpen, setModalChangePasswod] = useState<boolean>(false);
+  const [selectedCourse, setSelectedCourse] = useState<Course | null>(null);
+  const [displayModal, setDisplayModal] = useState<DisplayModalsType>(null);
+
+  const handleDisplayWorkouts = async (course: Course) => {
+    setSelectedCourse(course);
+    setDisplayModal("workout");
   };
 
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  useEffect(() => {
+    const fetchUserCourses = async () => {
+      if (!user?.uid) return;
 
-  const handleOpenModal = () => setIsModalOpen(true);
-  const handleCloseModal = () => setIsModalOpen(false);
+      try {
+        const userCourses = await getUserSubscriptions(user?.uid);
+
+        if (!userCourses) return;
+
+        let coursesData = await Promise.all(
+          Object.keys(userCourses).map(async (courseId) => {
+            return await getCourseById(courseId);
+          }),
+        );
+
+        coursesData = Object.values(coursesData).map((course) => {
+          const courseProgress =
+            Object.values(userCourses).find((userCourse) => userCourse._id === course._id)
+              ?.progress || 0;
+
+          const courseWorkouts = Object.keys(course.workouts).length;
+
+          return { ...course, progress: (courseProgress / courseWorkouts) * 100 };
+        });
+        setCourses(coursesData);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    fetchUserCourses();
+  }, [user]);
+
+  const handleCloseModal = () => {
+    setModalChangePasswod(false);
+  };
+
+  if (!user?.uid) {
+    navigate(ROUTES.main.generateUrl({}));
+    return <></>;
+  }
 
   return (
     <ContentWrapper>
       <Header />
-      <div className="flex h-[100%] w-full flex-col items-center bg-[#fafafa]">
-        <div className="mt-[50px] w-5/6">
-          <p className="text-start text-[40px]">Профиль</p>
+      <div className="flex w-full flex-col">
+        <div className="mt-[50px]">
+          <h2 className="text-start text-2xl font-semibold md:text-[40px]" data-testid="test">
+            Профиль
+          </h2>
         </div>
-        <div className="mt-4 flex w-5/6 rounded-2xl bg-white p-10 shadow-lg">
-          <img src="" alt="Картинка" width="197px" height="100px" />
-          <div>
-            <div className="text-[32px]">Даша</div>
-            <p className="text-[18px]">Логин: Даша</p>
-            <p className="text-[18px]">Пароль: лалала</p>
-            <button
-              type="button"
-              className="hover:bg-[#bcec30]-100 mb-2 me-2 rounded-full border border-none bg-[#bcec30] px-5 py-2.5 text-[15px] font-thin text-black focus:outline-none focus:ring-4 focus:ring-gray-100"
-            >
-              Изменить пароль
-            </button>
-            <button
-              type="button"
-              className="mb-2 me-2 rounded-full border border-gray-300 bg-white px-5 py-2.5 text-sm font-thin text-gray-900 hover:bg-gray-100 focus:outline-none focus:ring-4 focus:ring-gray-100 dark:border-gray-600 dark:bg-gray-800 dark:text-white dark:hover:border-gray-600 dark:hover:bg-gray-700"
-            >
-              Выйти
-            </button>
+        <div className="mt-4 flex flex-wrap justify-center gap-[33px] rounded-2xl bg-color-component-background p-10 shadow-lg md:justify-start">
+          <img src="/ProfilePicture.png" className="h-[197px] w-[197px]" alt="Фото профиля" />
+          <div className="flex flex-col gap-[30px]">
+            <p className="text-2xl md:text-[32px]">{user?.name}</p>
+            <div>
+              <p className="text-base md:text-[18px]">Логин: {user?.email}</p>
+              <p className="text-base md:text-[18px]">Пароль: ******</p>
+            </div>
+            <div className="mt-auto flex flex-wrap gap-[10px]">
+              <ButtonRegular
+                className="w-full min-w-[192px] text-base md:w-auto md:text-lg"
+                onClick={() => setModalChangePasswod(true)}
+                data-testid="modalChangeButton">
+                Изменить пароль
+              </ButtonRegular>
+              <ButtonTransparent
+                className="w-full min-w-[192px] text-base md:w-auto md:text-lg"
+                onClick={() => {
+                  setUser(null);
+                  auth.signOut();
+                }}>
+                Выйти
+              </ButtonTransparent>
+            </div>
           </div>
         </div>
-        <div className="mt-8 w-5/6">
-          <h2 className="mb-4 text-[32px]">Мои курсы</h2>
-          <div className="flex flex-wrap justify-between">
+        <div className="mt-[60px]">
+          <h2 className="text-2xl font-semibold md:text-[40px]">Мои курсы</h2>
+          <div className="mt-[50px] flex flex-wrap justify-center gap-[40px] lg:justify-start">
             {courses.map((course, index) => (
-              <div
+              <Card
                 key={index}
-                onClick={handleOpenModal}
-                className="w-full p-2 sm:w-1/2 md:w-1/3 lg:w-1/3"
-              >
-                <CourseItem course={course} status={status(course.progress)} />
-              </div>
+                course={course}
+                initialSubscribed={true}
+                uid={user?.uid}
+                handleDisplayWorkouts={handleDisplayWorkouts}
+              />
             ))}
           </div>
         </div>
       </div>
-      <ModalSelect isOpen={isModalOpen} onClose={handleCloseModal} />
+      <ModalChangePassword isOpen={isModalChangePasswordOpen} onClose={handleCloseModal} />
+      {displayModal === "workout" && selectedCourse && (
+        <ModalWorkoutSelect course={selectedCourse} setDisplayModal={setDisplayModal} />
+      )}
     </ContentWrapper>
   );
-}
+};
 
 export default Profile;

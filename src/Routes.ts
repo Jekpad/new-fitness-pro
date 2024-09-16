@@ -1,10 +1,7 @@
-export type RoutesType = {
-  [key: string]: {
-    name: string;
-    path: string;
-    generateUrl: (params: Record<string, string | number>) => string;
-  };
-};
+export type RoutesType = Record<
+  "main" | "course" | "profile" | "workout",
+  { name: string; path: string; generateUrl: (params: Record<string, string | number>) => string }
+>;
 
 export const ROUTES: RoutesType = {
   main: {
@@ -24,7 +21,7 @@ export const ROUTES: RoutesType = {
   },
   workout: {
     name: "Workout",
-    path: "/workout/:id",
-    generateUrl: ({ id }) => `/workout/${id}`,
+    path: "course/:courseid/workout/:workoutid",
+    generateUrl: ({ courseid, workoutid }) => `/course/${courseid}/workout/${workoutid}`,
   },
 };

@@ -1,29 +1,49 @@
-import firebase from "firebase/compat/app";
-import { child, Database, get, ref, set } from "firebase/database";
+import { getDatabase, ref, set, get, child, remove, update } from "firebase/database";
+import {
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  sendPasswordResetEmail,
+  updatePassword,
+} from "firebase/auth";
+import { auth, database } from "../../firebase";
+import { Course, UserCourse } from "@/types/course";
+import { Workout } from "@/types/workout";
 
-export const createUser = async (database: Database, email: string, uid: string) => {
-  await set(ref(database, "users/" + uid), {
+// Регистрация пользователя
+export const createUser = async (name: string, email: string, password: string) => {
+  const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+  const uid = userCredential.user.uid;
+
+  return await set(ref(database, "users/" + uid), {
+    uid: uid,
+    name: name,
     email: email,
-    workouts: {},
+    courses: {
+      workouts: {},
+    },
   });
 };
 
-export const getUser = async (database: Database, uid: string) => {
-  const dbRef = ref(database);
+// Вход пользователя
+export const getUser = async (email: string, password: string) => {
+  const userCredential = await signInWithEmailAndPassword(auth, email, password);
+  const uid = userCredential.user.uid;
+
+  const dbRef = ref(getDatabase());
   const snapshot = await get(child(dbRef, `users/${uid}`));
 
-  if (!snapshot.exists()) {
-    throw new Error("No data available");
-  }
+  // if (!snapshot.exists()) {
+  //   throw new Error("Пользователь не найден");
+  // }
 
   return snapshot.val();
 };
 
-//функция получения информации по всем курсам
-export const getCourses = async () => {
+// Функция получения всех курсов
+export const getCourses = async (): Promise<Course[]> => {
   try {
-    const coursesRef = firebase.database().ref("courses");
-    const snapshot = await coursesRef.once("value");
+    const coursesRef = ref(database, "courses");
+    const snapshot = await get(coursesRef);
 
     const courses = snapshot.val();
     const formattedCourses = Object.keys(courses).map((key) => ({
@@ -38,42 +58,27 @@ export const getCourses = async () => {
   }
 };
 
-//функция получения данных конкретного курса
-export const getCourseById = async (courseId) => {
-  try {
-    const courseRef = firebase.database().ref(`courses/${courseId}`);
-    const snapshot = await courseRef.once("value");
-    const course = snapshot.val();
+// Функция получения данных конкретного курса
+export const getCourseById = async (courseId: string): Promise<Course> => {
+  const courseRef = ref(database, `courses/${courseId}`);
+  const snapshot = await get(courseRef);
 
-    if (course) {
-      return {
-        id: courseId,
-        ...course,
-      };
-    } else {
-      throw new Error("Курс не найден");
-    }
-  } catch (error) {
-    console.error("Ошибка при получении курса: ", error);
-    return null;
-  }
+  if (!snapshot.exists()) throw new Error("Курс не найден");
+
+  return snapshot.val();
 };
 
-//подписка на курс
-export const subscribeToCourse = async (userId, courseId) => {
+// Подписка на курс
+export const subscribeToCourse = async (uid: string, courseId: string) => {
   try {
-    // Ссылка на подписки пользователя в базе данных
-    const userCoursesRef = firebase.database().ref(`users/${userId}/сourses`);
+    const userCoursesRef = ref(database, `users/${uid}/courses/${courseId}`);
 
-    // Получение текущих подписок пользователя
-    const snapshot = await userCoursesRef.once("value");
-    const subscribedCourses = snapshot.val() || [];
+    const snapshot = await get(userCoursesRef);
+    const subscribed = snapshot.val();
 
     // Добавление нового курса, если его нет в списке подписок
-    if (!subscribedCourses.includes(courseId)) {
-      subscribedCourses.push(courseId);
-      await userCoursesRef.set(subscribedCourses);
-      console.log(`Пользователь ${userId} успешно подписался на курс ${courseId}.`);
+    if (!subscribed) {
+      await set(userCoursesRef, { _id: courseId, progress: 0, workouts: {} });
     } else {
       console.log(`Пользователь уже подписан на курс ${courseId}.`);
     }
@@ -82,25 +87,111 @@ export const subscribeToCourse = async (userId, courseId) => {
   }
 };
 
-//отписка от курса
-export const unsubscribeFromCourse = async (userId, courseId) => {
+// Отписка от курса
+export const unsubscribeFromCourse = async (uid: string, courseId: string): Promise<void> => {
+  const courseRef = ref(database, `users/${uid}/courses/${courseId}`);
+  await remove(courseRef);
+};
+
+// Функция получения всех подписок пользователя
+export const getUserSubscriptions = async (
+  uid: string,
+): Promise<Record<string, UserCourse> | null> => {
   try {
-    // Ссылка на подписки пользователя в базе данных
-    const userCoursesRef = firebase.database().ref(`users/${userId}/сourses`);
+    const userSubscriptionsRef = ref(database, `users/${uid}/courses`);
+    const snapshot = await get(userSubscriptionsRef);
+    const subscribedCourses = snapshot.val();
 
-    // Получение текущих подписок пользователя
-    const snapshot = await userCoursesRef.once("value");
-    const subscribedCourses = snapshot.val() || [];
-
-    // Удаление курса из списка подписок, если он там есть
-    if (subscribedCourses.includes(courseId)) {
-      const updatedCourses = subscribedCourses.filter((id) => id !== courseId);
-      await userCoursesRef.set(updatedCourses);
-      console.log(`Пользователь ${userId} успешно отписался от курса ${courseId}.`);
-    } else {
-      console.log(`Пользователь не подписан на курс ${courseId}.`);
+    if (!subscribedCourses) {
+      return null;
     }
+
+    return subscribedCourses;
   } catch (error) {
-    console.error("Ошибка при отписке от курса: ", error);
+    console.error("Ошибка при получении подписок на курсы пользователя: ", error);
+    return null;
+  }
+};
+
+//получение данных тренировки по id
+export const getWorkoutById = async (workoutId: string): Promise<Workout> => {
+  const workoutRef = ref(database, `workouts/${workoutId}`);
+  const snapshot = await get(workoutRef);
+
+  if (!snapshot.exists()) throw new Error("Workout not found");
+
+  return snapshot.val();
+};
+
+export const setProgress = async (
+  courseId: string,
+  workoutId: string,
+  done: boolean,
+  exercisesProgress: number[],
+) => {
+  await set(
+    ref(database, `users/${auth.currentUser?.uid}/courses/${courseId}/workouts/${workoutId}`),
+    { done: done, exercises: exercisesProgress },
+  );
+
+  // Количество пройденных пользователем тренировок
+  const userWorkoutsSnapshot = await get(
+    ref(database, `users/${auth.currentUser?.uid}/courses/${courseId}/workouts/`),
+  );
+  const userWorkouts = userWorkoutsSnapshot.val();
+  const userWorkoutsCount = Object.values(userWorkouts).reduce(
+    (accumulator: number, current: any) => accumulator + +current.done,
+    0,
+  );
+
+  await update(ref(database, `users/${auth.currentUser?.uid}/courses/${courseId}/`), {
+    progress: userWorkoutsCount,
+  });
+};
+
+export const getUserCourseInfo = async (courseId: string): Promise<UserCourse> => {
+  if (!auth.currentUser) throw new Error("Пользователь не авторизован");
+
+  const workoutRef = ref(database, `users/${auth.currentUser.uid}/courses/${courseId}`);
+  const snapshot = await get(workoutRef);
+
+  if (!snapshot.exists()) throw new Error("Данные не найдены");
+
+  return snapshot.val();
+};
+
+// Функция восстановления пароля
+export const resetPassword = async (email: string) => {
+  try {
+    await sendPasswordResetEmail(auth, email);
+    return {
+      success: true,
+      message: "Ссылка для восстановления пароля была отправлена на указанный email.",
+    };
+  } catch (error: unknown) {
+    let errorMessage = "Произошла неизвестная ошибка.";
+    if (error instanceof Error) {
+      errorMessage = error.message;
+    }
+    console.error("Ошибка при отправке ссылки на восстановление пароля: ", errorMessage);
+    return {
+      success: false,
+      message: errorMessage, //для использования в компонентах
+    };
+  }
+};
+
+// Функция для изменения пароля текущего пользователя
+export const changePassword = async (password: string) => {
+  try {
+    // Проверяем, что пользователь авторизован
+    if (!auth.currentUser) {
+      throw new Error("Нет авторизации");
+    }
+    // Обновляем пароль текущего пользователя
+    await updatePassword(auth.currentUser, password);
+  } catch (error) {
+    // Обрабатываем ошибки и выбрасываем их с сообщением
+    if (error instanceof Error) throw new Error(error.message);
   }
 };
