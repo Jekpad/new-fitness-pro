@@ -110,6 +110,7 @@ export default function ModalSignUp({ setDisplayModal }: Props) {
                 id="password"
                 name="password"
                 autoComplete="new-password"
+                type="password"
                 placeholder="Пароль"
                 className={
                   errors.password?.message
@@ -124,6 +125,7 @@ export default function ModalSignUp({ setDisplayModal }: Props) {
                 register={register}
                 id="passwordRepeat"
                 name="passwordRepeat"
+                type="password"
                 autoComplete="new-password"
                 className={
                   errors.passwordRepeat?.message
