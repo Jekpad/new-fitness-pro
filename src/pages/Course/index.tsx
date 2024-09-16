@@ -29,7 +29,7 @@ const Course = () => {
   const courseId = params.id;
 
   const [courseData, setCourseData] = useState<CourseInt | null>(null);
-  const { user } = useUserContext();
+  const { user, setUser } = useUserContext();
   const [displayModal, setDisplayModal] = useState<DisplayModalsType>(null);
 
   const courseSubscribed = user?.courses
@@ -44,6 +44,15 @@ const Course = () => {
     if (!user?.uid || !courseId) return;
 
     await subscribeToCourse(user?.uid, courseId);
+    setUser((prevUser) => {
+      if (!prevUser) return prevUser;
+
+      return {
+        ...prevUser,
+        courses: Array.isArray(prevUser.courses) ? [...prevUser.courses, courseId] : [courseId],
+      };
+    });
+    alert("Вы успешно подписались на курс");
   };
 
   useEffect(() => {
