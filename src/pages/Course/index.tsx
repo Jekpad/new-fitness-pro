@@ -52,7 +52,6 @@ const Course = () => {
         courses: Array.isArray(prevUser.courses) ? [...prevUser.courses, courseId] : [courseId],
       };
     });
-    alert("Вы успешно подписались на курс");
   };
 
   useEffect(() => {
