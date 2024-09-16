@@ -65,7 +65,11 @@ function Profile() {
     setModalChangePasswod(false);
   };
 
-  if (!user?.uid) return navigate(ROUTES.main.generateUrl({}));
+  if (!user?.uid) {
+    navigate(ROUTES.main.generateUrl({}));
+    return <></>;
+  }
+
   return (
     <ContentWrapper>
       <Header />
