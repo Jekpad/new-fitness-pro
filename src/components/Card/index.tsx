@@ -65,7 +65,7 @@ export default function Card({ uid, initialSubscribed, course, handleDisplayWork
       <div className="relative flex w-full flex-row">
         <img alt={course.nameRU} className="h-[325px] w-full rounded-[30px]" src={course.image} />
         {!subscribed && (
-          <div className="group absolute right-5 top-5 z-10 cursor-pointer">
+          <div className="group absolute right-5 top-5 z-10 cursor-pointer" role="button">  
             <CourseAdd onClick={handleSubscribe} />
             <span className="absolute right-6 top-6 hidden whitespace-nowrap rounded border-[1px] border-black bg-color-background px-2 py-1 text-sm group-hover:inline-block md:left-6 md:right-auto">
               Добавить курс

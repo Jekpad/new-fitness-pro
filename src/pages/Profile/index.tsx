@@ -1,20 +1,20 @@
+import { auth } from "@/firebase";
 import { useEffect, useState } from "react";
 import Header from "@/components/Header/Header";
 import ContentWrapper from "@/components/ContentWrapper";
 import { useUserContext } from "@/contexts/userContext";
 import ButtonRegular from "@/components/UI/Buttons/ButtonRegular";
 import ButtonTransparent from "@/components/UI/Buttons/ButtonTransparent";
-import { auth } from "@/firebase";
-import { Course } from "@/types/course";
-import { getCourseById, getUserSubscriptions } from "@/utils/api";
 import { useNavigate } from "react-router-dom";
-import { ROUTES } from "@/Routes";
 import Card from "@/components/Card";
 import { DisplayModalsType } from "@/components/Modal/DisplayModalsType";
 import ModalWorkoutSelect from "@/components/Modal/ModalWorkoutSelect";
 import ModalChangePassword from "@/components/Modal/isModalChangePassword";
+import { ROUTES } from "@/Routes";
+import { getCourseById, getUserSubscriptions } from "@/utils/api";
+import { Course } from "@/types/course";
 
-function Profile() {
+const Profile = () => {
   const navigate = useNavigate();
 
   const { user, setUser } = useUserContext();
@@ -59,7 +59,7 @@ function Profile() {
     };
 
     fetchUserCourses();
-  }, []);
+  }, [user]);
 
   const handleCloseModal = () => {
     setModalChangePasswod(false);
@@ -75,7 +75,9 @@ function Profile() {
       <Header />
       <div className="flex w-full flex-col">
         <div className="mt-[50px]">
-          <h2 className="text-start text-2xl font-semibold md:text-[40px]">Профиль</h2>
+          <h2 className="text-start text-2xl font-semibold md:text-[40px]" data-testid="test">
+            Профиль
+          </h2>
         </div>
         <div className="mt-4 flex flex-wrap justify-center gap-[33px] rounded-2xl bg-color-component-background p-10 shadow-lg md:justify-start">
           <img src="/ProfilePicture.png" className="h-[197px] w-[197px]" alt="Фото профиля" />
@@ -88,7 +90,8 @@ function Profile() {
             <div className="mt-auto flex flex-wrap gap-[10px]">
               <ButtonRegular
                 className="w-full min-w-[192px] text-base md:w-auto md:text-lg"
-                onClick={() => setModalChangePasswod(true)}>
+                onClick={() => setModalChangePasswod(true)}
+                data-testid="modalChangeButton">
                 Изменить пароль
               </ButtonRegular>
               <ButtonTransparent
@@ -110,7 +113,7 @@ function Profile() {
                 key={index}
                 course={course}
                 initialSubscribed={true}
-                uid={user.uid}
+                uid={user?.uid}
                 handleDisplayWorkouts={handleDisplayWorkouts}
               />
             ))}
@@ -123,6 +126,6 @@ function Profile() {
       )}
     </ContentWrapper>
   );
-}
+};
 
 export default Profile;
