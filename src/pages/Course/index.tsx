@@ -37,10 +37,6 @@ const Course = () => {
     : undefined;
 
   const auth = () => {
-    // !!!
-    // Тестовая авторизация, потом переписать
-    // !!!
-    // setUser(getUserMockup());
     setDisplayModal("signin");
   };
 
@@ -69,107 +65,104 @@ const Course = () => {
   if (!courseData) return <LoadingPlaceholder />;
 
   return (
-    <ContentWrapper>
+    <ContentWrapper className="overflow-x-hidden">
       <Header />
       <div
-        className={`flex h-[310px] w-full flex-row justify-between rounded-[20px] px-10 mt-[60px]`}
-        style={{ backgroundColor: courseData.color }}
-      >
-        <div className="mt-10">
+        className={`mt-[60px] flex h-[389px] w-full flex-row justify-center rounded-[20px] px-0 pt-16 lg:h-[310px] lg:justify-between lg:px-10 lg:pt-0`}
+        style={{ backgroundColor: courseData.color }}>
+        <div className="mt-10 hidden lg:block">
           <p className="leading-16 text-6xl font-medium text-white">{courseData?.nameRU}</p>
         </div>
         <img
-          className="rounded-lg"
+          className="h-[310px] w-auto rounded-lg"
           src={courseData.image}
           alt="course_picture"
-          width="auto"
+          width="343"
           height="310"
         />
       </div>
 
-      <section className="mt-[60px]">
-        <p className="text-4xl font-bold">Подойдет для вас, если:</p>
-        <div className="flex flex-row gap-4 mt-10 items-center flex-wrap justify-center">
+      <section className="mt-10 lg:mt-[60px]">
+        <p className="text-2xl font-semibold lg:text-[40px]">Подойдет для вас, если:</p>
+        <div className="mt-6 grid grid-cols-1 gap-4 xl:mt-10 xl:grid-cols-3">
           {courseData.fitting &&
             Object.values(courseData.fitting).map((fit, index) => (
               <div
                 key={index}
-                className="h-[141px] w-auto rounded-[20px] bg-black p-[17px] flex flex-row items-center overflow-y-hidden max-w-[431px]"
-              >
+                className="flex w-full min-w-[326px] flex-row items-center justify-start rounded-[20px] bg-color-active p-5 md:p-[17px]">
                 <div className="flex items-center pr-[25px] text-7xl text-[#BCEC30]">
                   {index + 1}
                 </div>
-                <p className="text-[24px] text-white">{fit}</p>
+                <p className="text-lg text-white lg:text-2xl">{fit}</p>
               </div>
             ))}
         </div>
       </section>
 
-      <section className="mt-[60px]">
-        <h1 className=" text-4xl font-bold">Направления</h1>
-        <div className="mt-10 w-full gap-x-[126px] gap-y-8 rounded-[20px] p-[30px] bg-color-acсent grid grid-cols-3">
+      <section className="mt-10 lg:mt-[60px]">
+        <p className="text-2xl font-semibold lg:text-[40px]">Направления</p>
+        <div className="mt-6 grid w-full grid-cols-1 gap-y-6 rounded-[20px] bg-color-acсent p-[30px] lg:grid-cols-2 xl:mt-10 xl:grid-cols-3">
           {courseData.directions &&
             Object.values(courseData.directions).map((direction, index) => (
-              <div key={index} className="flex flex-row gap-2 items-center">
-                <SolidStar />
-                <p className="text-2xl text-nowrap">{direction}</p>
+              <div key={index} className="flex flex-nowrap">
+                <SolidStar className="min-h-6 min-w-6" />
+                <p className="ml-2 text-nowrap text-lg lg:text-2xl">{direction}</p>
               </div>
             ))}
         </div>
       </section>
 
-      <div className="mt-[102px] flex h-[486px] w-full flex-row rounded-[20px] bg-color-component-background shadow-xl relative justify-between">
-        <div>
-          <div className="h-[406px] w-[437px] py-[28px] pl-[28px]">
-            <h1 className="h-[120px] w-[398px] text-5xl font-semibold">
-              Начните путь <br />к новому телу
-            </h1>
-            <div className="">
-              <ul className="h-[178px] w-[437px] list-disc pb-[28px] pl-[28px] text-2xl/loose">
-                <li>проработка всех групп мышц</li>
-                <li>тренировка суставов</li>
-                <li>улучшение циркуляции крови</li>
-                <li>упражнения заряжают бодростью</li>
-                <li>помогают противостоять стрессам</li>
-              </ul>
-            </div>
-          </div>
-          <div className="cursor-pointer pl-[28px]">
-            {!user?.uid && (
-              <ButtonRegular className="w-full" onClick={auth}>
-                Войдите, чтобы добавить курс
-              </ButtonRegular>
-            )}
-            {user?.uid && !courseSubscribed && (
-              <ButtonRegular className="w-full" onClick={subscribeCourse}>
-                Добавить курс
-              </ButtonRegular>
-            )}
-            {user?.uid && courseSubscribed && (
-              <ButtonRegular className="w-full">Вы успешно подписались на курс</ButtonRegular>
-            )}
-          </div>
+      <div className="flex-column relative mt-[102px] flex w-full flex-wrap-reverse rounded-[20px] bg-color-component-background shadow-xl lg:flex-nowrap lg:justify-between 2xl:h-[486px]">
+        <div className="z-[1] w-full rounded-[20px] bg-color-component-background p-[28px] lg:w-auto">
+          <h1 className="lg:lette text-[32px] font-semibold lg:text-[60px] lg:leading-none">
+            Начните путь <br />к новому телу
+          </h1>
+          <ul className="mt-[28px] w-[437px] list-disc pl-[28px] text-[18px] opacity-50 lg:text-[24px]">
+            <li>проработка всех групп мышц</li>
+            <li>тренировка суставов</li>
+            <li>улучшение циркуляции крови</li>
+            <li>упражнения заряжают бодростью</li>
+            <li>помогают противостоять стрессам</li>
+          </ul>
+
+          {!user?.uid && (
+            <ButtonRegular className="mt-[28px] w-full text-[18px]" onClick={auth}>
+              Войдите, чтобы добавить курс
+            </ButtonRegular>
+          )}
+          {user?.uid && !courseSubscribed && (
+            <ButtonRegular className="mt-[28px] w-full text-[18px]" onClick={subscribeCourse}>
+              Добавить курс
+            </ButtonRegular>
+          )}
+          {user?.uid && courseSubscribed && (
+            <ButtonRegular className="mt-[28px] w-full text-[18px]">
+              Вы успешно подписались на курс
+            </ButtonRegular>
+          )}
         </div>
 
-        <div className="w-[660px] h-full relative">
-          <div className="w-[660px] h-full overflow-hidden relative">
+        <div className="absolute -right-24 -top-72 z-0 sm:right-2 lg:relative lg:right-0 lg:top-0">
+          <div className="relative h-full min-h-[400px] w-svw sm:w-[340px] sm:overflow-hidden lg:w-[450px] 2xl:w-[660px]">
             <img
-              className="rotate-[355deg] pt-[100px] absolute right-[10px]"
+              className="absolute -bottom-32 right-20 rotate-[355deg] sm:bottom-0 sm:right-[10px]"
               alt=""
               src="/green_line.png"
               width="670"
               height="390"
             />
           </div>
+
           <img
-            className="absolute bottom-5 right-2"
+            className="absolute bottom-5 right-2 w-[300px] sm:w-auto"
             alt=""
             src="/running_man.png"
             width="519"
             height="539"
           />
+
           <img
-            className="absolute top-5 right-96"
+            className="right-[300px] top-8 hidden sm:absolute lg:top-16 xl:right-96 2xl:right-[380px] 2xl:top-5"
             alt=""
             src="/black_line.png"
             width="50"
@@ -177,6 +170,7 @@ const Course = () => {
           />
         </div>
       </div>
+
       {displayModal === "signin" && <ModalSignIn setDisplayModal={setDisplayModal} />}
       {displayModal === "signup" && <ModalSignUp setDisplayModal={setDisplayModal} />}
     </ContentWrapper>

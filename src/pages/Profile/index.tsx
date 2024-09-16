@@ -1,13 +1,8 @@
 import { auth } from "@/firebase";
 import { useEffect, useState } from "react";
-
-import { useUserContext } from "@/contexts/userContext";
-import { getCourseById, getUserSubscriptions } from "@/utils/api";
-import { ROUTES } from "@/Routes";
-import { Course } from "@/types/course";
-
 import Header from "@/components/Header/Header";
 import ContentWrapper from "@/components/ContentWrapper";
+import { useUserContext } from "@/contexts/userContext";
 import ButtonRegular from "@/components/UI/Buttons/ButtonRegular";
 import ButtonTransparent from "@/components/UI/Buttons/ButtonTransparent";
 import { useNavigate } from "react-router-dom";
@@ -15,6 +10,8 @@ import Card from "@/components/Card";
 import { DisplayModalsType } from "@/components/Modal/DisplayModalsType";
 import ModalWorkoutSelect from "@/components/Modal/ModalWorkoutSelect";
 import ModalChangePassword from "@/components/Modal/isModalChangePassword";
+import { ROUTES } from "@/Routes";
+import { getCourseById, getUserSubscriptions } from "@/utils/api";
 
 const Profile = () => {
   const navigate = useNavigate();
@@ -67,40 +64,39 @@ const Profile = () => {
     setModalChangePasswod(false);
   };
 
-  useEffect(() => {
-    const returnToMain = () => {
-      navigate(ROUTES.main.generateUrl({}));
-    };
-
-    if (!user?.uid) return returnToMain();
-  }, [user, navigate]);
+  if (!user?.uid) {
+    navigate(ROUTES.main.generateUrl({}));
+    return <></>;
+  }
 
   return (
     <ContentWrapper>
       <Header />
       <div className="flex w-full flex-col">
         <div className="mt-[50px]">
-          <h2 className="text-start text-[40px] font-semibold" data-testid="test">
+          <h2 className="text-start text-2xl font-semibold md:text-[40px]" data-testid="test">
             Профиль
           </h2>
         </div>
-        <div className="mt-4 flex gap-[33px] rounded-2xl bg-color-component-background p-10 shadow-lg">
-          <img src="/ProfilePicture.png" alt="Картинка" width={197} height={197} />
+        <div className="mt-4 flex flex-wrap justify-center gap-[33px] rounded-2xl bg-color-component-background p-10 shadow-lg md:justify-start">
+          <img src="/ProfilePicture.png" className="h-[197px] w-[197px]" alt="Фото профиля" />
           <div className="flex flex-col gap-[30px]">
-            <p className="text-[32px]">{user?.name}</p>
+            <p className="text-2xl md:text-[32px]">{user?.name}</p>
             <div>
-              <p className="text-[18px]">Логин: {user?.email}</p>
-              <p className="text-[18px]">Пароль: ******</p>
+              <p className="text-base md:text-[18px]">Логин: {user?.email}</p>
+              <p className="text-base md:text-[18px]">Пароль: ******</p>
             </div>
-            <div className="mt-auto">
+            <div className="mt-auto flex flex-wrap gap-[10px]">
               <ButtonRegular
-                className="min-w-[192px]"
+               
+                className="w-full min-w-[192px] text-base md:w-auto md:text-lg"
+               
                 onClick={() => setModalChangePasswod(true)}
                 data-testid="modalChangeButton">
                 Изменить пароль
               </ButtonRegular>
               <ButtonTransparent
-                className="ml-[10px] min-w-[192px]"
+                className="w-full min-w-[192px] text-base md:w-auto md:text-lg"
                 onClick={() => {
                   setUser(null);
                   auth.signOut();
@@ -111,8 +107,8 @@ const Profile = () => {
           </div>
         </div>
         <div className="mt-[60px]">
-          <h2 className="text-[40px] font-semibold">Мои курсы</h2>
-          <div className="mt-[50px] flex flex-wrap justify-start gap-[40px]">
+          <h2 className="text-2xl font-semibold md:text-[40px]">Мои курсы</h2>
+          <div className="mt-[50px] flex flex-wrap justify-center gap-[40px] lg:justify-start">
             {courses.map((course, index) => (
               <Card
                 key={index}
