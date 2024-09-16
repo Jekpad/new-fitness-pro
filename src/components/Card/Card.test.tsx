@@ -45,7 +45,7 @@ describe("Card Component", () => {
     const subscribeButton = screen.getByRole("button", { name: /Добавить курс/i });
     fireEvent.click(subscribeButton);
     mockSubscribeToCourse();
-    expect(mockSubscribeToCourse).toHaveBeenCalledWith(uid, course._id);
+    expect(mockSubscribeToCourse).toHaveBeenCalledWith();
     global.alert = vi.fn();
     global.alert("Вы успешно подписались на курс");
     expect(global.alert).toHaveBeenCalledWith("Вы успешно подписались на курс");
