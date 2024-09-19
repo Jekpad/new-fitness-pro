@@ -11,6 +11,7 @@ type Props = {
   setIsPopUpDisplay: Dispatch<SetStateAction<DisplayModalsType>>;
   exercises: Exercise[];
   userExercises?: Record<string, number>;
+  getData: Function,
 };
 
 type FormValues = Record<string, string>;
@@ -21,6 +22,7 @@ const ModalProgress = ({
   exercises,
   userExercises,
   setIsPopUpDisplay,
+  getData,
 }: Props) => {
   const { register, handleSubmit } = useForm<FormValues>();
 
@@ -35,8 +37,11 @@ const ModalProgress = ({
       });
 
       await setProgress(courseid, workoutid, workoutDone, saveData);
+      await getData();
       setTimeout(() => {
-        window.location.reload();
+        setIsPopUpDisplay(null);
+        // window.location.reload();
+        // console.log('12222')
       }, 1500);
       setIsPopUpDisplay("workoutsuccess");
     } catch (error) {

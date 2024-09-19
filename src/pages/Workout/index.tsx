@@ -25,28 +25,26 @@ function Workout() {
   const [course, setCourse] = useState<Course | undefined>();
   const [workout, setWorkout] = useState<WorkoutType.Workout | undefined>();
   const [userCourse, setUserCourse] = useState<UserCourse | undefined>();
+  const getData = async () => {
+    if (!courseid || !workoutid || !user) return;
+    try {
+      const userCourses = await getUserSubscriptions(user.uid);
+      if (!userCourses) return;
 
+      const course = await getCourseById(courseid);
+      const workout = await getWorkoutById(workoutid);
+      console.log(workout);
+      const userCourse = userCourses[courseid];
+
+      setWorkout(workout);
+      setCourse(course);
+      setUserCourse(userCourse);
+    } catch (error) {
+      console.error(error);
+    }
+  };
   useEffect(() => {
     if (!courseid || !workoutid || !user) return;
-
-    const getData = async () => {
-      try {
-        const userCourses = await getUserSubscriptions(user.uid);
-        if (!userCourses) return;
-
-        const course = await getCourseById(courseid);
-        const workout = await getWorkoutById(workoutid);
-        console.log(workout);
-        const userCourse = userCourses[courseid];
-
-        setWorkout(workout);
-        setCourse(course);
-        setUserCourse(userCourse);
-      } catch (error) {
-        console.error(error);
-      }
-    };
-
     getData();
   }, []);
 
@@ -99,7 +97,7 @@ function Workout() {
             className="mt-10 w-full md:w-auto md:text-xl"
             onClick={async () => {
               await setProgress(courseid, workoutid, true, []);
-              window.location.reload();
+              // window.location.reload();
             }}>
             Отметить пройденным
           </ButtonRegular>
@@ -113,6 +111,7 @@ function Workout() {
           setIsPopUpDisplay={setDisplayModal}
           exercises={workout.exercises}
           userExercises={userCourse.workouts?.[workoutid]?.exercises}
+          getData={getData}
         />
       )}
       {displayModal === "workoutsuccess" && <ModalProgressSuccess />}

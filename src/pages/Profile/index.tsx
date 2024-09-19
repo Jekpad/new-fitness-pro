@@ -9,7 +9,7 @@ import { useNavigate } from "react-router-dom";
 import Card from "@/components/Card";
 import { DisplayModalsType } from "@/components/Modal/DisplayModalsType";
 import ModalWorkoutSelect from "@/components/Modal/ModalWorkoutSelect";
-import ModalChangePassword from "@/components/Modal/isModalChangePassword";
+import ModalChangePassword from "@/components/Modal/ChangePassword";
 import { ROUTES } from "@/Routes";
 import { getCourseById, getUserSubscriptions } from "@/utils/api";
 import { Course } from "@/types/course";
