@@ -19,9 +19,10 @@ type CardProps = {
   initialSubscribed: boolean;
   course: Course;
   handleDisplayWorkouts?: (course: Course) => void;
+  fetchUserCourses: Function,
 };
 
-export default function Card({ uid, initialSubscribed, course, handleDisplayWorkouts }: CardProps) {
+export default function Card({ uid, initialSubscribed, course, handleDisplayWorkouts, fetchUserCourses }: CardProps) {
   const navigate = useNavigate();
 
   const [subscribed, setSubscribed] = useState(initialSubscribed);
@@ -34,7 +35,7 @@ export default function Card({ uid, initialSubscribed, course, handleDisplayWork
     try {
       await subscribeToCourse(uid, course._id);
       setSubscribed(true);
-      alert(`Вы успешно подписались на курс ${course.nameRU}`);
+      // alert(`Вы успешно подписались на курс ${course.nameRU}`);
     } catch (error) {
       console.error("Ошибка при подписке на курс:", error);
       return alert("Произошла ошибка при подписке на курс");
@@ -47,12 +48,13 @@ export default function Card({ uid, initialSubscribed, course, handleDisplayWork
     if (!uid) return alert("Авторизуйтесь");
     try {
       await unsubscribeFromCourse(uid, course._id);
-      setSubscribed(false);
-      alert(`Вы успешно отписались с курса ${course.nameRU}`);
-      // if (uid) {
-      //   setSubscribed(initialSubscribed)
-      //   // return window.location.reload()
-      // };
+      await fetchUserCourses();
+      // setSubscribed(false);
+      // alert(`Вы успешно отписались с курса ${course.nameRU}`);
+      if (uid) {
+        // await setSubscribed(initialSubscribed)
+        // return window.location.reload()
+      };
     } catch (error) {
       return console.error("Ошибка при отписке от курса:", error);
     }
