@@ -1,9 +1,12 @@
-import { UseFormRegister } from "react-hook-form";
+import { UseFormRegister, FieldValues } from 'react-hook-form';
 
+interface FormValues extends FieldValues {
+  [key: string]: string; 
+}
 type Props = React.InputHTMLAttributes<HTMLInputElement> & {
   name: string;
   className?: string;
-  register?: UseFormRegister<any>;
+  register?: UseFormRegister<FormValues>;
 };
 
 const InputRegular = ({ className, register, name, ...props }: Props) => {
