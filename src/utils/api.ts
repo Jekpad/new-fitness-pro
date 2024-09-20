@@ -8,9 +8,6 @@ import {
 import { auth, database } from "../../firebase";
 import { Course, UserCourse } from "@/types/course";
 import { Workout } from "@/types/workout";
-interface Workoutt {
-  done: number; 
-}
 // Регистрация пользователя
 export const createUser = async (name: string, email: string, password: string) => {
   const userCredential = await createUserWithEmailAndPassword(auth, email, password);

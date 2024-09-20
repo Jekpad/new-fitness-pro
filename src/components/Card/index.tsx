@@ -48,8 +48,10 @@ export default function Card({ uid, initialSubscribed, course, handleDisplayWork
     if (!uid) return alert("Авторизуйтесь");
     try {
       await unsubscribeFromCourse(uid, course._id);
-      await fetchUserCourses();
-      // setSubscribed(false);
+      if (fetchUserCourses) {
+        await fetchUserCourses();
+      }
+      setSubscribed(false);
       // alert(`Вы успешно отписались с курса ${course.nameRU}`);
       if (uid) {
         // await setSubscribed(initialSubscribed)
