@@ -1,5 +1,5 @@
+import React from "react";
 import { Course } from "@/types/course";
-import React, { useEffect, useState } from "react";
 import { subscribeToCourse, unsubscribeFromCourse } from "@/utils/api";
 
 import Difficult5 from "@/assets/difficult5.svg?react";
@@ -19,7 +19,7 @@ type CardProps = {
   initialSubscribed: boolean;
   course: Course;
   handleDisplayWorkouts?: (course: Course) => void;
-  fetchUserCourses: () => Promise<void>;
+  onChangeSubscribe?: () => void;
 };
 
 export default function Card({
@@ -27,11 +27,9 @@ export default function Card({
   initialSubscribed,
   course,
   handleDisplayWorkouts,
-  fetchUserCourses,
+  onChangeSubscribe,
 }: CardProps) {
   const navigate = useNavigate();
-
-  const [subscribed, setSubscribed] = useState(initialSubscribed);
 
   const handleSubscribe = async (e: React.MouseEvent<SVGSVGElement, MouseEvent>) => {
     e.stopPropagation();
@@ -40,7 +38,7 @@ export default function Card({
 
     try {
       await subscribeToCourse(uid, course._id);
-      setSubscribed(true);
+      if (onChangeSubscribe) onChangeSubscribe();
     } catch (error) {
       console.error("Ошибка при подписке на курс:", error);
       return alert("Произошла ошибка при подписке на курс");
@@ -53,23 +51,11 @@ export default function Card({
     if (!uid) return alert("Авторизуйтесь");
     try {
       await unsubscribeFromCourse(uid, course._id);
-      if (fetchUserCourses) {
-        await fetchUserCourses();
-      }
-      setSubscribed(false);
-      // alert(`Вы успешно отписались с курса ${course.nameRU}`);
-      if (uid) {
-        // await setSubscribed(initialSubscribed)
-        // return window.location.reload()
-      };
+      if (onChangeSubscribe) onChangeSubscribe();
     } catch (error) {
       return console.error("Ошибка при отписке от курса:", error);
     }
   };
-
-  useEffect(() => {
-    setSubscribed(initialSubscribed);
-  }, [initialSubscribed]);
 
   const openModal = (e: React.MouseEvent<HTMLButtonElement>, course: Course): void => {
     e.stopPropagation();
@@ -86,7 +72,7 @@ export default function Card({
       className="flex w-full max-w-[343px] flex-col items-start justify-center gap-[24px] rounded-[30px] shadow-lg md:w-[360px]">
       <div className="relative flex w-full flex-row">
         <img alt={course.nameRU} className="h-[325px] w-full rounded-[30px]" src={course.image} />
-        {!subscribed && (
+        {!initialSubscribed && (
           <div className="group absolute right-5 top-5 z-10 cursor-pointer" role="button">
             <CourseAdd onClick={handleSubscribe} />
             <span className="absolute right-6 top-6 hidden whitespace-nowrap rounded border-[1px] border-black bg-color-background px-2 py-1 text-sm group-hover:inline-block md:left-6 md:right-auto">
@@ -94,7 +80,7 @@ export default function Card({
             </span>
           </div>
         )}
-        {subscribed && (
+        {initialSubscribed && (
           <div className="group absolute right-5 top-5 z-10 cursor-pointer">
             <CourseRemove onClick={handleUnsubscribe} />
             <span className="absolute right-6 top-6 hidden whitespace-nowrap rounded border-[1px] border-black bg-color-background px-2 py-1 text-sm group-hover:inline-block md:left-6 md:right-auto">
@@ -151,7 +137,7 @@ export default function Card({
             Сложность {course.difficulty}
           </div>
         </div>
-        {subscribed && course.progress !== undefined && handleDisplayWorkouts && (
+        {initialSubscribed && course.progress !== undefined && handleDisplayWorkouts && (
           <>
             <ProgressBar text="Прогресс" progress={course.progress} />
             <ButtonRegular onClick={(e) => openModal(e, course)}>

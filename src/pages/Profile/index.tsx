@@ -1,5 +1,5 @@
 import { auth } from "@/firebase";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import Header from "@/components/Header/Header";
 import ContentWrapper from "@/components/ContentWrapper";
 import { useUserContext } from "@/contexts/userContext";
@@ -27,17 +27,16 @@ const Profile = () => {
     setSelectedCourse(course);
     setDisplayModal("workout");
   };
-  const fetchUserCourses = async () => {
+
+  const fetchUserCourses = useCallback(async () => {
     if (!user?.uid) return;
 
     try {
       const userCourses = await getUserSubscriptions(user?.uid);
-      console.log(userCourses)
 
       if (!userCourses) {
-        setCourses([])
-        return;
-      };
+        return setCourses([]);
+      }
 
       let coursesData = await Promise.all(
         Object.keys(userCourses).map(async (courseId) => {
@@ -55,14 +54,14 @@ const Profile = () => {
         return { ...course, progress: (courseProgress / courseWorkouts) * 100 };
       });
       setCourses(coursesData);
-      console.log(courses)
     } catch (error) {
       console.error(error);
     }
-  };
+  }, [user]);
+
   useEffect(() => {
     fetchUserCourses();
-  }, [user]);
+  }, [user, fetchUserCourses]);
 
   const handleCloseModal = () => {
     setModalChangePasswod(false);
@@ -118,7 +117,7 @@ const Profile = () => {
                 initialSubscribed={true}
                 uid={user?.uid}
                 handleDisplayWorkouts={handleDisplayWorkouts}
-                fetchUserCourses={fetchUserCourses}
+                onChangeSubscribe={fetchUserCourses}
               />
             ))}
           </div>
