@@ -8,6 +8,7 @@ import {
 import { auth, database } from "../../firebase";
 import { Course, UserCourse } from "@/types/course";
 import { Workout } from "@/types/workout";
+
 // Регистрация пользователя
 export const createUser = async (name: string, email: string, password: string) => {
   const userCredential = await createUserWithEmailAndPassword(auth, email, password);
@@ -30,11 +31,6 @@ export const getUser = async (email: string, password: string) => {
 
   const dbRef = ref(getDatabase());
   const snapshot = await get(child(dbRef, `users/${uid}`));
-
-  // if (!snapshot.exists()) {
-  //   throw new Error("Пользователь не найден");
-  // }
-
   return snapshot.val();
 };
 
@@ -137,9 +133,9 @@ export const setProgress = async (
   const userWorkoutsSnapshot = await get(
     ref(database, `users/${auth.currentUser?.uid}/courses/${courseId}/workouts/`),
   );
-  const userWorkouts:Record<string, Workout> = userWorkoutsSnapshot.val();
+  const userWorkouts = userWorkoutsSnapshot.val() as UserCourse["workouts"][];
   const userWorkoutsCount = Object.values(userWorkouts).reduce(
-    (accumulator: number, current: Workout) => accumulator + +current?.done,
+    (accumulator: number, current: UserCourse["workouts"]) => accumulator + +(current?.done || 0),
     0,
   );
 
@@ -175,7 +171,7 @@ export const resetPassword = async (email: string) => {
     console.error("Ошибка при отправке ссылки на восстановление пароля: ", errorMessage);
     return {
       success: false,
-      message: errorMessage, //для использования в компонентах
+      message: errorMessage,
     };
   }
 };
@@ -183,14 +179,11 @@ export const resetPassword = async (email: string) => {
 // Функция для изменения пароля текущего пользователя
 export const changePassword = async (password: string) => {
   try {
-    // Проверяем, что пользователь авторизован
     if (!auth.currentUser) {
       throw new Error("Нет авторизации");
     }
-    // Обновляем пароль текущего пользователя
     await updatePassword(auth.currentUser, password);
   } catch (error) {
-    // Обрабатываем ошибки и выбрасываем их с сообщением
     if (error instanceof Error) throw new Error(error.message);
   }
 };

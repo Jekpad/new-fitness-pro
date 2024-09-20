@@ -11,7 +11,7 @@ type Props = {
   setIsPopUpDisplay: Dispatch<SetStateAction<DisplayModalsType>>;
   exercises: Exercise[];
   userExercises?: Record<string, number>;
-  getData: Function,
+  getData: () => void;
 };
 
 type FormValues = Record<string, string>;
@@ -40,8 +40,6 @@ const ModalProgress = ({
       await getData();
       setTimeout(() => {
         setIsPopUpDisplay(null);
-        // window.location.reload();
-        // console.log('12222')
       }, 1500);
       setIsPopUpDisplay("workoutsuccess");
     } catch (error) {

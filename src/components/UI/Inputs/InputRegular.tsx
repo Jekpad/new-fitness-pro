@@ -1,19 +1,16 @@
-import { UseFormRegister, FieldValues } from 'react-hook-form';
+import { UseFormRegister, FieldValues, Path } from "react-hook-form";
 
-interface FormValues extends FieldValues {
-  [key: string]: string; 
-}
-type Props = React.InputHTMLAttributes<HTMLInputElement> & {
-  name: string;
+type Props<T extends FieldValues> = React.InputHTMLAttributes<HTMLInputElement> & {
+  name: Path<T>;
   className?: string;
-  register?: UseFormRegister<FormValues>;
+  register?: UseFormRegister<T>;
 };
 
-const InputRegular = ({ className, register, name, ...props }: Props) => {
+const InputRegular = <T extends FieldValues>({ className, register, name, ...props }: Props<T>) => {
   return (
     <input
       {...(register ? register(name) : {})}
-      className={`border-[#D0CECE] rounded-lg px-[18px] py-4 border-2 text-lg ${className}`}
+      className={`rounded-lg border-2 border-[#D0CECE] px-[18px] py-4 text-lg ${className}`}
       {...props}
     />
   );

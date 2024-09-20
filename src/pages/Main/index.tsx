@@ -14,13 +14,14 @@ function Main() {
   useEffect(() => {
     const fetchCourses = async () => {
       if (user?.uid) setUserCourses(await getUserSubscriptions(user?.uid));
+      else setUserCourses(null);
 
       const coursesData = await getCourses();
       setCourses(coursesData);
     };
 
     fetchCourses();
-  }, [user?.uid]);
+  }, [user]);
 
   const scrollToTop = () => {
     window.scrollTo({
