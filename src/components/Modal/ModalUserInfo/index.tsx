@@ -25,10 +25,9 @@ const ModalUserInfo = ({ className, setDisplayModal }: Props) => {
       <ButtonTransparent
         className="w-full"
         onClick={() => {
+          setDisplayModal(null);
           setUser(null);
           auth.signOut();
-          setDisplayModal(null);
-          window.location.reload();
         }}>
         Выйти
       </ButtonTransparent>

@@ -1,5 +1,5 @@
 import { Course } from "@/types/course";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { subscribeToCourse, unsubscribeFromCourse } from "@/utils/api";
 
 import Difficult5 from "@/assets/difficult5.svg?react";
@@ -49,16 +49,29 @@ export default function Card({ uid, initialSubscribed, course, handleDisplayWork
       await unsubscribeFromCourse(uid, course._id);
       setSubscribed(false);
       alert(`Вы успешно отписались с курса ${course.nameRU}`);
-      if (uid) return window.location.reload();
+      // if (uid) {
+      //   setSubscribed(initialSubscribed)
+      //   // return window.location.reload()
+      // };
     } catch (error) {
       return console.error("Ошибка при отписке от курса:", error);
     }
   };
 
+  useEffect(() => {
+    setSubscribed(initialSubscribed)
+  }, [initialSubscribed])
+
+  const openModal = (e: React.MouseEvent<HTMLButtonElement>, course: Course): void => {
+    e.stopPropagation();
+    if (handleDisplayWorkouts) {
+      handleDisplayWorkouts(course);
+    }
+  }
+
   return (
     <div
       onClick={() => {
-        if (subscribed) return;
         navigate(ROUTES.course.generateUrl({ id: course._id }));
       }}
       className="flex w-full max-w-[343px] flex-col items-start justify-center gap-[24px] rounded-[30px] shadow-lg md:w-[360px]">
@@ -132,7 +145,7 @@ export default function Card({ uid, initialSubscribed, course, handleDisplayWork
         {subscribed && course.progress !== undefined && handleDisplayWorkouts && (
           <>
             <ProgressBar text="Прогресс" progress={course.progress} />
-            <ButtonRegular onClick={() => handleDisplayWorkouts(course)}>
+            <ButtonRegular onClick={(e) => openModal(e, course)}>
               {course.progress == 0 && "Начать тренировки"}
               {course.progress > 0 && course.progress < 100 && "Продолжить"}
               {course.progress == 100 && "Начать заново"}
