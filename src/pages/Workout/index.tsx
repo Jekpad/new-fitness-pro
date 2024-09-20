@@ -19,7 +19,6 @@ function Workout() {
   const { user } = useUserContext();
   const { courseid, workoutid } = useParams();
 
-  // const [isPopUpDisplay, setIsPopUpDisplay] = useState<boolean>(false);
   const [displayModal, setDisplayModal] = useState<DisplayModalsType>(null);
 
   const [course, setCourse] = useState<Course | undefined>();
@@ -33,7 +32,6 @@ function Workout() {
 
       const course = await getCourseById(courseid);
       const workout = await getWorkoutById(workoutid);
-      console.log(workout);
       const userCourse = userCourses[courseid];
 
       setWorkout(workout);
