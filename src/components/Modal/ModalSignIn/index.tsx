@@ -54,7 +54,8 @@ export default function ModalSignIn({ setDisplayModal }: Props) {
     try {
       const result = await getUser(data.email, data.password);
       setUser(result);
-      window.location.reload();
+      setDisplayModal(null);
+      // window.location.reload();
     } catch (error) {
       if (error instanceof FirebaseError && error.code == "auth/invalid-credential")
         return setRestorePassword((previous) => ({ ...previous, message: true }));

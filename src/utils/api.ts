@@ -138,9 +138,9 @@ export const setProgress = async (
   const userWorkoutsSnapshot = await get(
     ref(database, `users/${auth.currentUser?.uid}/courses/${courseId}/workouts/`),
   );
-  const userWorkouts = userWorkoutsSnapshot.val();
+  const userWorkouts = userWorkoutsSnapshot.val() as UserCourse["workouts"][];
   const userWorkoutsCount = Object.values(userWorkouts).reduce(
-    (accumulator: number, current: any) => accumulator + +current.done,
+    (accumulator: number, current: UserCourse["workouts"]) => accumulator + +(current?.done || 0),
     0,
   );
 
