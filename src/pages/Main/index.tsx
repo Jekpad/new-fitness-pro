@@ -12,7 +12,6 @@ function Main() {
   const [userCourses, setUserCourses] = useState<Record<string, UserCourse> | null>(null);
 
   useEffect(() => {
-    console.log('123')
     const fetchCourses = async () => {
       if (user?.uid) setUserCourses(await getUserSubscriptions(user?.uid));
 

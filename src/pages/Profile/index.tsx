@@ -27,37 +27,40 @@ const Profile = () => {
     setSelectedCourse(course);
     setDisplayModal("workout");
   };
+  const fetchUserCourses = async () => {
+    if (!user?.uid) return;
 
+    try {
+      const userCourses = await getUserSubscriptions(user?.uid);
+      console.log(userCourses)
+
+      if (!userCourses) {
+        setCourses([])
+        return;
+      };
+
+      let coursesData = await Promise.all(
+        Object.keys(userCourses).map(async (courseId) => {
+          return await getCourseById(courseId);
+        }),
+      );
+
+      coursesData = Object.values(coursesData).map((course) => {
+        const courseProgress =
+          Object.values(userCourses).find((userCourse) => userCourse._id === course._id)
+            ?.progress || 0;
+
+        const courseWorkouts = Object.keys(course.workouts).length;
+
+        return { ...course, progress: (courseProgress / courseWorkouts) * 100 };
+      });
+      setCourses(coursesData);
+      console.log(courses)
+    } catch (error) {
+      console.error(error);
+    }
+  };
   useEffect(() => {
-    const fetchUserCourses = async () => {
-      if (!user?.uid) return;
-
-      try {
-        const userCourses = await getUserSubscriptions(user?.uid);
-
-        if (!userCourses) return;
-
-        let coursesData = await Promise.all(
-          Object.keys(userCourses).map(async (courseId) => {
-            return await getCourseById(courseId);
-          }),
-        );
-
-        coursesData = Object.values(coursesData).map((course) => {
-          const courseProgress =
-            Object.values(userCourses).find((userCourse) => userCourse._id === course._id)
-              ?.progress || 0;
-
-          const courseWorkouts = Object.keys(course.workouts).length;
-
-          return { ...course, progress: (courseProgress / courseWorkouts) * 100 };
-        });
-        setCourses(coursesData);
-      } catch (error) {
-        console.error(error);
-      }
-    };
-
     fetchUserCourses();
   }, [user]);
 
@@ -115,6 +118,7 @@ const Profile = () => {
                 initialSubscribed={true}
                 uid={user?.uid}
                 handleDisplayWorkouts={handleDisplayWorkouts}
+                fetchUserCourses={fetchUserCourses}
               />
             ))}
           </div>
