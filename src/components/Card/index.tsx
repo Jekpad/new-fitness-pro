@@ -19,10 +19,16 @@ type CardProps = {
   initialSubscribed: boolean;
   course: Course;
   handleDisplayWorkouts?: (course: Course) => void;
-  fetchUserCourses: Function,
+  fetchUserCourses: () => Promise<void>;
 };
 
-export default function Card({ uid, initialSubscribed, course, handleDisplayWorkouts, fetchUserCourses }: CardProps) {
+export default function Card({
+  uid,
+  initialSubscribed,
+  course,
+  handleDisplayWorkouts,
+  fetchUserCourses,
+}: CardProps) {
   const navigate = useNavigate();
 
   const [subscribed, setSubscribed] = useState(initialSubscribed);
@@ -35,7 +41,6 @@ export default function Card({ uid, initialSubscribed, course, handleDisplayWork
     try {
       await subscribeToCourse(uid, course._id);
       setSubscribed(true);
-      // alert(`Вы успешно подписались на курс ${course.nameRU}`);
     } catch (error) {
       console.error("Ошибка при подписке на курс:", error);
       return alert("Произошла ошибка при подписке на курс");
@@ -49,27 +54,21 @@ export default function Card({ uid, initialSubscribed, course, handleDisplayWork
     try {
       await unsubscribeFromCourse(uid, course._id);
       await fetchUserCourses();
-      // setSubscribed(false);
-      // alert(`Вы успешно отписались с курса ${course.nameRU}`);
-      if (uid) {
-        // await setSubscribed(initialSubscribed)
-        // return window.location.reload()
-      };
     } catch (error) {
       return console.error("Ошибка при отписке от курса:", error);
     }
   };
 
   useEffect(() => {
-    setSubscribed(initialSubscribed)
-  }, [initialSubscribed])
+    setSubscribed(initialSubscribed);
+  }, [initialSubscribed]);
 
   const openModal = (e: React.MouseEvent<HTMLButtonElement>, course: Course): void => {
     e.stopPropagation();
     if (handleDisplayWorkouts) {
       handleDisplayWorkouts(course);
     }
-  }
+  };
 
   return (
     <div
@@ -80,7 +79,7 @@ export default function Card({ uid, initialSubscribed, course, handleDisplayWork
       <div className="relative flex w-full flex-row">
         <img alt={course.nameRU} className="h-[325px] w-full rounded-[30px]" src={course.image} />
         {!subscribed && (
-          <div className="group absolute right-5 top-5 z-10 cursor-pointer" role="button">  
+          <div className="group absolute right-5 top-5 z-10 cursor-pointer" role="button">
             <CourseAdd onClick={handleSubscribe} />
             <span className="absolute right-6 top-6 hidden whitespace-nowrap rounded border-[1px] border-black bg-color-background px-2 py-1 text-sm group-hover:inline-block md:left-6 md:right-auto">
               Добавить курс
