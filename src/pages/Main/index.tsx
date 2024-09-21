@@ -51,6 +51,9 @@ function Main() {
                 course={course}
                 uid={user?.uid}
                 initialSubscribed={subscribed}
+                onChangeSubscribe={async () => {
+                  if (user?.uid) setUserCourses(await getUserSubscriptions(user?.uid));
+                }}
               />
             );
           })}

@@ -95,7 +95,6 @@ function Workout() {
             className="mt-10 w-full md:w-auto md:text-xl"
             onClick={async () => {
               await setProgress(courseid, workoutid, true, []);
-              // window.location.reload();
             }}>
             Отметить пройденным
           </ButtonRegular>

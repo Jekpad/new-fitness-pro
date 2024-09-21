@@ -1,5 +1,5 @@
 import { auth } from "@/firebase";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import Header from "@/components/Header/Header";
 import ContentWrapper from "@/components/ContentWrapper";
 import { useUserContext } from "@/contexts/userContext";
@@ -28,38 +28,40 @@ const Profile = () => {
     setDisplayModal("workout");
   };
 
-  useEffect(() => {
-    const fetchUserCourses = async () => {
-      if (!user?.uid) return;
+  const fetchUserCourses = useCallback(async () => {
+    if (!user?.uid) return;
 
-      try {
-        const userCourses = await getUserSubscriptions(user?.uid);
+    try {
+      const userCourses = await getUserSubscriptions(user?.uid);
 
-        if (!userCourses) return;
-
-        let coursesData = await Promise.all(
-          Object.keys(userCourses).map(async (courseId) => {
-            return await getCourseById(courseId);
-          }),
-        );
-
-        coursesData = Object.values(coursesData).map((course) => {
-          const courseProgress =
-            Object.values(userCourses).find((userCourse) => userCourse._id === course._id)
-              ?.progress || 0;
-
-          const courseWorkouts = Object.keys(course.workouts).length;
-
-          return { ...course, progress: (courseProgress / courseWorkouts) * 100 };
-        });
-        setCourses(coursesData);
-      } catch (error) {
-        console.error(error);
+      if (!userCourses) {
+        return setCourses([]);
       }
-    };
 
-    fetchUserCourses();
+      let coursesData = await Promise.all(
+        Object.keys(userCourses).map(async (courseId) => {
+          return await getCourseById(courseId);
+        }),
+      );
+
+      coursesData = Object.values(coursesData).map((course) => {
+        const courseProgress =
+          Object.values(userCourses).find((userCourse) => userCourse._id === course._id)
+            ?.progress || 0;
+
+        const courseWorkouts = Object.keys(course.workouts).length;
+
+        return { ...course, progress: (courseProgress / courseWorkouts) * 100 };
+      });
+      setCourses(coursesData);
+    } catch (error) {
+      console.error(error);
+    }
   }, [user]);
+
+  useEffect(() => {
+    fetchUserCourses();
+  }, [user, fetchUserCourses]);
 
   const handleCloseModal = () => {
     setModalChangePasswod(false);
@@ -115,6 +117,7 @@ const Profile = () => {
                 initialSubscribed={true}
                 uid={user?.uid}
                 handleDisplayWorkouts={handleDisplayWorkouts}
+                onChangeSubscribe={fetchUserCourses}
               />
             ))}
           </div>
